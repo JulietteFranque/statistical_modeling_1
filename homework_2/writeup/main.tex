@@ -89,5 +89,74 @@ Note that the log likelihood was not strictly concave (its second derivative is 
     \label{fig:my_label}
 \end{figure}
 
+Newton-Raphson converged in 3 iterations (given the tolerance specified). The two other algorithms took larger number of iterations. In terms of time, Newton-Raphson was also the fastest algorithm to converge.
+
+\subsection*{(4) Let $y_{i,j}$
+ind∼ $Normal(\mu_i,\sigma^2)$, $i = 1,...,n$ and $j = 1,...,m$ with $n \xrightarrow[]{} \infty$
+but m fixed. Find out the MLEs of $\mu_i$ and $\sigma^2$. Show that  $\hat{\sigma}^2$ MLE is inconsistent for $\sigma^2$. Adjust this estimator to come up with a consistent estimator of  $\sigma^2$.}
+
+We have
+
+\begin{align*}
+    L(\mu, \sigma^2) &=  (2\pi \sigma^2)^{-n/2} \text{exp} \left(- \frac{\sum(y_i-\mu)^2}{2\sigma^2}\right)\\
+    \mathcal{L}(\mu, \sigma^2) &= -\frac{n}{2}log(2\pi)  -\frac{n}{2}log(\sigma^2)  -\frac{1}{2\sigma^2}\sum(y_i-\mu)^2
+\end{align*}
+
+and 
+
+\begin{align*}
+    \frac{\partial \mathcal{L}(\mu, \sigma^2)}{\partial \mu} &= 0 \\
+    -\frac{1}{2\sigma^2} \sum -2(y_i-\mu)&= 0 \\
+     \sum y_i-n\mu&= 0 \\
+     \sum \mu&= \bar{y} \\
+\end{align*}
+
+\begin{align*}
+    \frac{\partial \mathcal{L}(\mu, \sigma^2)}{\partial \sigma^2} &= 0 \\
+    -\frac{n}{2\sigma^2} + \frac{1}{2\sigma^4}\sum (y_i - \mu)^2&= 0 \\
+     -\frac{n}{2} + \frac{1}{2\sigma^2}\sum (y_i - \mu)^2&= 0 \\
+     -\sigma^2n +\sum (y_i - \mu)^2&= 0 \\
+     \sigma^2 &= \sum (y_i - \mu)^2 / n \\
+\end{align*}
+
+In practice we would replace $\mu$ with $\bar{y}$. But
+
+\begin{align*}
+    E(\sigma^2_{MLE}) &= E\left(\sum (y_i - \bar{y})^2 / n\right)\\
+    &= \frac{1}{n} E\left(\sum y_i^2 - 2\bar{y} \sum y_i + \bar{y}n \right)\\
+    &= \frac{1}{n} E\left( y_i^2 - 2\bar{y}^2n + \bar{y}^2n \right)\\
+     &= \frac{1}{n} E\left( \sum y_i^2 - \bar{y}^2n \right)\\
+      &= \frac{1}{n} E\left( \sum y_i^2 - \bar{y}^2n \right)\\
+       &=  E( y^2) - E(\bar{y}^2)\\
+          &=  var(y) + E(y)^2 - var(\bar{y}) - E(\bar{y})^2 \\
+            &=  var(y)  - var(\bar{y}) \\
+              &=  var(y)  - var(y)/n \\
+               &=  \frac{(n-1)\sigma^2}{n}\\
+\end{align*}
+So, a better estimator is $\sum (y_i - \mu)^2 / (n-1) $.
+
+\subsection*{(5) For $y_1,...,y_n \sim Uniform(0, 
+\theta)$, show that $ z_n = \frac{n(\theta-\hat{\theta}_{MLE})}{\theta} \xrightarrow[]{D} E$, where E is exponential. Design a simulation study illustrating this nice result.}
+
+We have, for $y \in [0, \theta]$
+
+\begin{align*}
+    f(y) &= 1/\theta \\ 
+    L(\theta) &= 1/ \theta ^n\\
+\end{align*}
+
+In order to maximize $L(\theta)$, it is obvious that $\theta = max(y_i)$ because if it is less than $ max(y_i)$, samples will be left out (which  will have probability 0).
+
+\begin{align*}
+    P\left(\frac{n[\theta-\hat{\theta}_{MLE}] }{\theta} \leq t\right) &= 1 -  P\left(\frac{n[\theta-\hat{\theta}_{MLE}] }{\theta}  \geq t\right)\\
+    &= 1 -  P\left(\hat{\theta}_{MLE}  \leq \frac{\theta[t-n]}{n} \right)\\
+     &= 1 -  P\left(\hat{\theta}_{MLE}  \leq \frac{\theta[t-n]}{n} \right)\\
+      &= 1 -  P\left(max(y)  \leq \frac{\theta[t-n]}{n} \right)\\
+       &= 1 -  \prod P\left(y_i  \leq \frac{\theta[t-n]}{n} \right)\\
+        &= 1 -  \left( \frac{\frac{\theta[t-n]}{n}}{\theta} \right)^n\\
+          &= 1 -  (1-t/n)^n\\
+\end{align*}
+
+and $\lim_{n\to\infty}  1 -  (1-t/n)^n = 1-\text{exp}(-t)$, which is the cdf of $\exp(1)$. So we have shown that $ z_n = \frac{n(\theta-\hat{\theta}_{MLE})}{\theta} \xrightarrow[]{D} E$, where E is exponential. This result is illustrated in the plot below.
 
 \end{document}
