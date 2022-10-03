@@ -5,7 +5,7 @@ import warnings
 
 class GradientAscent:
     """
-    do gradient ascent :-P
+    do gradient ascent
     """
 
     def __init__(self, y_obs, lr=.01, max_iter=5000, tol=1e-5):
@@ -24,7 +24,7 @@ class GradientAscent:
         """
         self.lr = lr
         self.max_iter = max_iter
-        self.init_points = np.linspace(y_obs.min(), y_obs.max(), 10)
+        self.init_points = np.linspace(y_obs.min(), y_obs.max(), 50)
         self.tol = tol
         self.optimal_theta = None
         self.it_to_convergence = None
@@ -132,8 +132,8 @@ class GradientAscent:
         n_iter = np.zeros(len(self.init_points))
         for n, point in enumerate(self.init_points):
             optimal_thetas[n], maximum_likelihoods[n], n_iter[n] = self.fit_one_initial_point(point)
-        self.optimal_theta = optimal_thetas[np.argmax(maximum_likelihoods)]
-        self.it_to_convergence = n_iter[np.argmax(maximum_likelihoods)]
+        self.optimal_theta = optimal_thetas[np.nanargmax(maximum_likelihoods)]
+        self.it_to_convergence = n_iter[np.nanargmax(maximum_likelihoods)]
         return {'optimal theta': self.optimal_theta, 'n_iter': self.it_to_convergence}
 
 
@@ -141,10 +141,6 @@ class StochasticGradientAscent(GradientAscent):
     """
         inherits gradient ascent and does sga
     """
-
-    def __init__(self, y_obs, lr=.01, max_iter=1000, tol=1e-5, percent_batch_size=.3):
-        super().__init__(y_obs=y_obs, lr=lr, max_iter=max_iter, tol=tol)
-        self.percent_batch_size = percent_batch_size
 
     def fit_one_initial_point(self, init_theta):
         """
@@ -160,8 +156,7 @@ class StochasticGradientAscent(GradientAscent):
         """
         thetas, log_likelihoods = self.initialize_params(init_theta, self.y_obs)
         for it in range(self.max_iter - 1):
-            selected_obs = np.random.choice(a=self.y_obs, size=int(len(self.y_obs) * self.percent_batch_size),
-                                            replace=False)
+            selected_obs = np.random.choice(a=self.y_obs, size=1, replace=False)
             thetas[it + 1] = thetas[it] + self.lr * self.calculate_derivative_log_likelihood(thetas[it], selected_obs)
             log_likelihoods[it + 1] = self.calculate_log_likelihood(thetas[it + 1], self.y_obs)
             if self.check_convergence(it, log_likelihoods):
@@ -174,6 +169,7 @@ class NewtonMethod(GradientAscent):
     """
     Newton's method
     """
+
     def fit_one_initial_point(self, init_theta):
         """
 
@@ -188,12 +184,11 @@ class NewtonMethod(GradientAscent):
         """
         thetas, log_likelihoods = self.initialize_params(init_theta, self.y_obs)
         for it in range(self.max_iter - 1):
-            thetas[it + 1] = thetas[it] - 1 / self.calculate_hessian(thetas[it], self.y_obs) \
-                             * self.calculate_derivative_log_likelihood(thetas[it], self.y_obs)
+            thetas[it + 1] = thetas[it] - 1 / self.calculate_hessian(thetas[it], self.y_obs) * self.calculate_derivative_log_likelihood(thetas[it], self.y_obs)
             log_likelihoods[it + 1] = self.calculate_log_likelihood(thetas[it + 1], self.y_obs)
             if self.check_convergence(it, log_likelihoods):
                 return thetas[it + 1], log_likelihoods[it + 1], it
-        warnings.warn(f'not converged for init point {init_theta}')
+        #warnings.warn(f'not converged for init point {init_theta}')
         return thetas[-1], log_likelihoods[-1], self.max_iter
 
     @staticmethod
@@ -209,8 +204,8 @@ class NewtonMethod(GradientAscent):
         -------
 
         """
-        jacobian = np.sum(2 * ((theta - y_obs) ** 2 - 1) / (1 + (y_obs - theta) ** 2) ** 2)
-        return jacobian
+        hessian = np.sum(2*((theta-y_obs)**2 - 1) / (1 + (theta-y_obs)**2)**2)
+        return hessian
 
 
 if __name__ == '__main__':

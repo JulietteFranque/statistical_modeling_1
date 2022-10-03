@@ -136,4 +136,5 @@ if __name__ == '__main__':
     obs_data = np.array([225, 171, 198, 189, 189, 135, 162, 135, 117, 162])
     opt = WeibullMle(obs_data)
     opt.fit()
+    print(opt.lam, opt.k)
     pass
