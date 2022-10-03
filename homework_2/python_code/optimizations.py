@@ -1,6 +1,8 @@
 """ . """
 import numpy as np
 import warnings
+import time
+
 
 
 class GradientAscent:
@@ -130,10 +132,14 @@ class GradientAscent:
         optimal_thetas = np.zeros(len(self.init_points))
         maximum_likelihoods = np.zeros(len(self.init_points))
         n_iter = np.zeros(len(self.init_points))
+        times = np.zeros(len(self.init_points))
         for n, point in enumerate(self.init_points):
+            start_time = time.time()
             optimal_thetas[n], maximum_likelihoods[n], n_iter[n] = self.fit_one_initial_point(point)
+            times[n] = time.time() - start_time
         self.optimal_theta = optimal_thetas[np.nanargmax(maximum_likelihoods)]
         self.it_to_convergence = n_iter[np.nanargmax(maximum_likelihoods)]
+        self.time_to_conv = times[np.nanargmax(maximum_likelihoods)]
         return {'optimal theta': self.optimal_theta, 'n_iter': self.it_to_convergence}
 
 
@@ -219,7 +225,7 @@ if __name__ == '__main__':
     sga.fit()
     nt = NewtonMethod(y_obs=observed_data)
     nt.fit()
-    print('Gradient Ascent iter :', ga.it_to_convergence)
-    print('Stochastic gradient Ascent iter :', sga.it_to_convergence)
-    print('Newton Ascent iter :', nt.it_to_convergence)
+    print('Gradient Ascent iter :', ga.time_to_conv)
+    print('Stochastic gradient Ascent iter :', sga.time_to_conv)
+    print('Newton Ascent iter :', nt.time_to_conv)
     pass
