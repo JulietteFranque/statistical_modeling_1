@@ -1,0 +1,40 @@
+\documentclass[11pt]{article}
+ 
+\usepackage[margin=.95in]{geometry} 
+\usepackage{amsmath,amsthm,amssymb, graphicx, multicol, array}
+ 
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+ 
+
+\begin{document}
+ 
+\title{Homework 1}
+\author{Juliette Franqueville\\
+}
+\maketitle
+
+\subsection*{(1)  For $y_1,.., y_n \sim \mathcal{N}(\mu,\sigma^2 )$, show that $s = (\bar{y},s^2 )$ are sufficient. Also, find the observed and the expected information matrices}
+
+The factorization theorem says that statistic $s$ is sufficient iif $f(y_{1:n}|\theta) = g(s|\theta)h(y_{1:n})$. For the normal, we have:
+
+\begin{align*}
+   f(y_{1:n}|\theta) &= \prod (2\pi \sigma^2)^{-1/2} \text{exp}\left(-\frac{(y_i-\mu)^2}{2\sigma^2}\right) \\
+   &=(2\pi \sigma^2)^{-n/2}\text{exp}\left(-\frac{\sum (y_i-\mu)^2}{2\sigma^2}\right) \\
+    &=(2\pi \sigma^2)^{-n/2}\text{exp}\left(-\frac{\sum ([y_i-\bar{y}]-[\mu-\bar{y})]^2}{2\sigma^2}\right) \\
+    &=(2\pi \sigma^2)^{-n/2}\text{exp}\left(-\frac{\sum \{ [y_i-\bar{y}]^2-2[y_i-\bar{y}][\mu-\bar{y}]+[\mu-\bar{y}]^2 \}}{2\sigma^2}\right) \\
+        &=(2\pi \sigma^2)^{-n/2}\text{exp}\left(-\frac{\sum \{ [y_i-\bar{y}]^2+[\mu-\bar{y}]^2 \}}{2\sigma^2}\right) \\
+        &=(2\pi \sigma^2)^{-n/2}\text{exp}\left(-\frac{\sum  [y_i-\bar{y}]^2}{2\sigma^2}\right) \text{exp}\left(-\frac{n [\mu-\bar{y}]^2}{2\sigma^2}\right) \\
+        &=(2\pi \sigma^2)^{-n/2}\text{exp}\left(-\frac{\sum  [y_i-\bar{y}]^2}{2\sigma^2}\right) \text{exp}\left(-\frac{n [\mu-\bar{y}]^2}{2\sigma^2}\right) \\
+    &=(2\pi \sigma^2)^{-n/2}\text{exp}\left(-\frac{(n-1)s^2}{2\sigma^2}\right) \text{exp}\left(-\frac{n [\mu-\bar{y}]^2}{2\sigma^2}\right) \\
+\end{align*}
+
+
+We recognize $h(y_{1:n}) =1 $ and $g(\bar{y}, s^2|\mu, \sigma^2)= (2\pi \sigma^2)^{-n/2}\text{exp}\left(-\frac{(n-1)s^2}{2\sigma^2}\right) \text{exp}\left(-\frac{n [\mu-\bar{y}]^2}{2\sigma^2}\right)$ is a sufficient statistic for $(\mu, \sigma^2)$.
+
+
+\subsection*{(3)  (a) Draw a random sample of size $n = 2$0 from a $\text{Cauchy}(0,1)$ distribution. Compute $\bar{y}n$. Repeat this $B = 1000$ times. Draw a histogram of the sampled $\bar{y}n$ values, superimposed over a $\text{Cauchy(0,1)}$ density.}
+
+
+
+\end{document}
