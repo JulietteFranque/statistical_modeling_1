@@ -60,12 +60,34 @@ For gradient ascent and stochastic gradient ascent, we have:
     \theta^{(m+1)} = \theta^{(m)} + \gamma \frac{\partial \mathcal{L}(\theta^{(m)})}{\partial \theta}
 \end{align*}
 
-For stochastic gradient ascent, we randomly choose a single sample to evaluate the log likelihood at each iteration. For Newton-Raphson:
+For stochastic gradient ascent, we randomly choose a single sample to evaluate the log likelihood at each iteration. For Newton-Raphson (this is the general multidimensional form, we only have one unknown here):
 
 \begin{align*}
     \theta^{(m+1)} = \theta^{(m)} - H(\theta^{(m)})^{-1} \frac{\partial \mathcal{L}(\theta^{(m)})}{\partial \theta}
 \end{align*}
 
 Note that the log likelihood was not strictly concave (its second derivative is not strictly negative). Therefore, the optimizations were repeated several times at different starting values and the run resulting in the highest MLE was chosen. The scripts are attached to this homework.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.55]{homework_2/figures/mle_cauchy.png}
+    \caption{Cauchy($\theta$, 1) for the three methods using their $\theta_{MLE}$}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.55]{homework_2/figures/cauchy_fns.png}
+    \caption{Log likelihood and its first and second derivatives}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.55]{homework_2/figures/cauchy_loglike.png}
+    \caption{Log likelihood and the $\theta$ values for the three optimizers (they overlap).}
+    \label{fig:my_label}
+\end{figure}
+
 
 \end{document}
