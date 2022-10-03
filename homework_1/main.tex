@@ -16,22 +16,68 @@
 
 \section*{(1) Prove Slutsky's theorem.}
 
-Slutsky's theorem states that if $x_n \xrightarrow[]{D} x$ and $z_n \xrightarrow[]{P} z_0$, then 
+Slutsky's theorem states that 
 
+\begin{itemize}
+\item $x_n \xrightarrow[]{P} x \Rightarrow x_n \xrightarrow[]{D} x$
+\item $x_n \xrightarrow[]{D} x_0 \Rightarrow x_n \xrightarrow[]{P} x_0$
+    \item if $x_n \xrightarrow[]{D} x$ and $z_n \xrightarrow[]{P} z_0$, then 
+\end{itemize}
+ 
 \begin{align*}
     x_n +z_n &\xrightarrow[]{D} x+z_0\\
     x_n z_n &\xrightarrow[]{D} xz_0\\
     x_n / z_n &\xrightarrow[]{D} x/z_0\\
 \end{align*}
 
-First, we know that if $z_n \xrightarrow[]{P} z_0$, $z_n \xrightarrow[]{D} z_0$. Then, we show that $(x_n, z_n)\xrightarrow[]{D} (x, z_0)$.  According to asymptotic equivalence, if $(x_n, z_0) \xrightarrow[]{D} (x, z_0)$ and $(x_n, z_n) - (x_n, z_0) \xrightarrow[]{P} 0$, then $(x_n, z_n) \xrightarrow[]{D} (x, z_0)$.  $(x_n, z_0) \xrightarrow[]{D} (x, z_0)$  follows from the continuous mapping theorem, and $(x_n, z_n) - (x_n, z_0) = z_n - z_0 \xrightarrow[]{P} 0$, so  $(x_n, z_n) \xrightarrow[]{D} (x, z_0)$. We then simply use the continuous mapping theorem:
+We will prove the three lemmas in order. 
+
+First, we have to show that if $x_n \xrightarrow[]{P} x$,   $\lim_{n \to \infty }Pr(x_n \leq a)  = Pr(x \leq a)$ for any $a$. 
+
+
+We show, using basic probability rules, that for $\epsilon > 0$
+
+\begin{align*}
+Pr(x_n \leq a) &= Pr(x_n \leq a, x \leq a + \epsilon) + Pr(y > a, x \leq a + \epsilon)\\
+& \leq Pr(x \leq a + \epsilon) + Pr(x_n - x > a-x, a-x<-\epsilon)\\
+& \leq Pr(x \leq a + \epsilon) + Pr(x_n - x <-\epsilon)\\
+& \leq Pr(x \leq a + \epsilon) + Pr(x_n - x <-\epsilon)+ Pr(x_n - x > \epsilon)\\
+& \leq Pr(x \leq a + \epsilon) + Pr(|x_n - x| > \epsilon)\\
+\end{align*}
+
+So, 
+
+\begin{align*}
+Pr(x_n \leq a) &\leq Pr(x \leq a + \epsilon) + Pr(|x_n - x| > \epsilon)\\
+Pr(x_n \leq a-\epsilon) &\leq Pr(x \leq a) + Pr(|x_n - x| > \epsilon)\\
+Pr(x_n \leq a-\epsilon) -Pr(|x_n - x|) > \epsilon)&\leq Pr(x_n \leq a)  \leq Pr(x_n \leq a+\epsilon) +Pr(|x_n - x|>\epsilon)
+\end{align*}
+
+Taking the limit as $n \to \infty$, we find that
+$F_x(a-\epsilon) \leq \lim_{n \to \infty } Pr(x_n \leq a) \leq F_x(a+\epsilon)$, so (from the squeeze theorem), $\lim_{n \to \infty }Pr(x_n \leq a)  = Pr(x \leq a)$ as $\epsilon \to 0$.\\
+
+Secondly, we have to show that if $x_n \xrightarrow[]{D} x_0$,  $\lim_{n \to \infty }P(|x_n -x| > \epsilon) = 0$. We have:
+
+\begin{align*}
+    \lim_{n \to \infty }P(|x_n-x_0| \leq \epsilon) &=   \lim_{n \to \infty } P(-\epsilon\leq x_n-x_0 \leq \epsilon)\\
+    &=  \lim_{n \to \infty }P(x_n-x_0 \leq \epsilon) - \lim_{n \to \infty }P(x_n-x_0 \leq - \epsilon)\\
+    &=  \lim_{n \to \infty }P(x_n \leq \epsilon+x_0) - \lim_{n \to \infty }P(x_n \leq x_0 - \epsilon)\\
+      &=  \lim_{n \to \infty }F_{xn}(\epsilon+x_0) - \lim_{n \to \infty }F_{xn}(x_0-\epsilon) \\ &= 1-0=1\\
+\end{align*}
+
+Or, equivalently,  $\lim_{n \to \infty }P(|x_n -x_0| > \epsilon) = 0$; which is the definition of convergence in probability. To go from the second to last to the last line, we used the fact that $x_n \xrightarrow[]{D} x_0$. \\
+
+
+
+
+We know that if $z_n \xrightarrow[]{P} z_0$, $z_n \xrightarrow[]{D} z_0$. Lastly, we show that $(x_n, z_n)\xrightarrow[]{D} (x, z_0)$.  If $(x_n, z_0) \xrightarrow[]{D} (x, z_0)$ and $(x_n, z_n) - (x_n, z_0) \xrightarrow[]{P} 0$, then $(x_n, z_n) \xrightarrow[]{D} (x, z_0)$.  $(x_n, z_0) \xrightarrow[]{D} (x, z_0)$  follows from the continuous mapping theorem, and $(x_n, z_n) - (x_n, z_0) = z_n - z_0 \xrightarrow[]{P} 0$, so  $(x_n, z_n) \xrightarrow[]{D} (x, z_0)$. We then simply use the continuous mapping theorem:
 
 \begin{align*}
     x_n & \xrightarrow[]{D} x \\ 
     g(x_n) & \xrightarrow[]{D} g(x) \\ 
 \end{align*}
 
-with $g(x,y) = x+y$,  $g(x,y) = xy$, and $g(x,y) = x/y$.
+with $g(x,y) = x+y$,  $g(x,y) = xy$, and $g(x,y) = x/y$ to prove the last part of Slutsky's theorem.
 
 
 \section*{(2) For $y \sim \text{Poisson}(\lambda)$, show that $E(y) = var(y) = \lambda$. Method of moments suggests $\bar{y_n}$, the sample mean, as well as $s^2_n$, the sample variance, could both be reasonable estimators of $\lambda$. Which one would you prefer? Why?}
@@ -46,7 +92,7 @@ We use the first derivative of the MGF, $\lambda e^{t}e^{\lambda(e^t-1)}$, to fi
 
 It seems more natural to use the sample mean as an estimator of $\lambda$ than the sample variance, although both may be used. Also, since the MLE for Poisson is the sample mean, the sample mean may be preferable as it will maximize the likelihood of the data.
 
-\section*{(3) For $(x_1, y1), ... , (x_n, y_n) \sim f_{x,y}$ with finite second order moments. Show that the sample correlation coefficient $r_n$ converges in probability to the population correlation coefficient $\rho$.}
+\section*{(3) For $(x_1, y_1), ... , (x_n, y_n) \sim f_{x,y}$ with finite second order moments. Show that the sample correlation coefficient $r_n$ converges in probability to the population correlation coefficient $\rho$.}
 
 
 $\rho$ can be estimated using $r_n$:
@@ -58,7 +104,7 @@ $\rho$ can be estimated using $r_n$:
 
 The sample variances $(n-1)^{-1}\sum (x_j-\bar{x})^2$ and $(n-1)^{-1}\sum (y_j-\bar{y})^2$ converge to the population variances $var(x)$ and $var(y)$, respectively (this was shown in class). Using continuous mapping theorem, $[(n-1)^{-1}\sum (x_j-\bar{x})^2]^{1/2}$ and $[(n-1)^{-1}\sum (y_j-\bar{y})^2]^{1/2}$ converge to $var(x)^{1/2}$ and $var(y)^{1/2}$, respectively.\\
 
-In the numerator, we know that $n^{-1} \sum x_j$ converges in probability to $E(x)$, so $(n-1)^{-1} \sum x_j = [(n-1)^{-1}/n^{-1}] n^{-1} \sum x_j$ also converges to $E(x)$. Likewise, $(n-1)^{-1} \sum y_j$ converges to $E(y)$ and $(n-1)^{-1} \sum x_j y_j$ converges to $E(xy)$. $\bar{x}$ and $\bar{y}$ converge to $E(x)$ and $E(y)$, respectively. Putting this all together
+In the numerator, we know that $n^{-1} \sum x_j$ converges in probability to $E(x)$ (from WLLN), so $(n-1)^{-1} \sum x_j = [(n-1)^{-1}/n^{-1}] n^{-1} \sum x_j$ also converges to $E(x)$. Likewise, $(n-1)^{-1} \sum y_j$ converges to $E(y)$ and $(n-1)^{-1} \sum x_j y_j$ converges to $E(xy)$. $\bar{x}$ and $\bar{y}$ converge to $E(x)$ and $E(y)$, respectively. Putting this all together
 and using the fact that  if $X_{n} \xrightarrow {\overset {}{p}} X$ and  $Y_{n} \xrightarrow {\overset {}{p}} Y$, then $X_{n} + Y_{n} \xrightarrow {\overset {}{p}} X + Y$, $X_{n} Y_{n} \xrightarrow {\overset {}{p}} X Y$  and $X_{n} /Y_{n} \xrightarrow {\overset {}{p}} X/ Y$ (this follows from ${\displaystyle X_{n}\ {\xrightarrow {\overset {}{p}}}\ X,\ \ Y_{n}\ {\xrightarrow {\overset {}{p}}}\ Y \Rightarrow(X_{n},Y_{n})\ {\xrightarrow {\overset {}{p}}}\ (X,Y)}$ and applying the the continuous mapping theorem), we get that 
 
 \begin{align*}
@@ -206,7 +252,7 @@ Recognizing that the term inside the integral is the density of $N(\sigma t, 1)$
 
 \section*{(7) Show that a binomial random variable $R$ with denominator $m$ and probability $\pi$ has a cumulant generating function $K(t)=mlog(1-\pi+\pi e^t)$. Find lim K(t) as $m \rightarrow \infty$,  $\pi \rightarrow 0$ in a way so that $m\pi \rightarrow \lambda > 0$. Show that $Pr(R=r) \rightarrow \lambda^re^{-\lambda}/r!$ and hence establish that $R \xrightarrow[]{D} \text{Poisson}(\lambda)$. Using your favorite programming language, provide a numerical illustration of the result.}
 
-Start with finding the MGF for a binormial distribution:
+Start with finding the MGF for a binomial distribution:
 
 \begin{align*}
     MGF_r(t) &= \sum_{0}^{m}{m \choose r} \pi^r (1-\pi)^{m-r}e^{tr}\\
@@ -266,7 +312,7 @@ The two MGF match, so $r \xrightarrow[]{D}
     \label{fig:my_label}
 \end{figure}
 
-\newpage
+
 \section*{(8) If $Z \sim N(0, 1)$, derive the density of $Y=Z^2$. Although Y is
 determined by $Z$, show that they are uncorrelated.}
 We will prove that $Y \sim \chi^2_1$ by showing that the $MGF$ of $Y$ is the same as that of the $\chi^2_1$ distribution.
@@ -281,7 +327,7 @@ We will prove that $Y \sim \chi^2_1$ by showing that the $MGF$ of $Y$ is the sam
      &= (1-2t)^{-1/2}
  \end{align*}
  
- By recognizing the pdf of $N(0, \{1-2t\}^{-1/2})$. Now we obtain the MGF of $\chi^2_1$ using its pdf:
+ By recognizing the pdf of $N(0, \{1-2t\}^{-1})$. Now we obtain the MGF of $\chi^2_1$ using its pdf:
  
   \begin{align*}
      MGF_y(t) &=   \int_{-\infty}^{\infty} \frac{1}{\sqrt{2}\Gamma(1/2)} y^{-1/2}e^{-y/2}e^{ty}dy\\
@@ -292,7 +338,7 @@ We will prove that $Y \sim \chi^2_1$ by showing that the $MGF$ of $Y$ is the sam
  
    \begin{align*}
      MGF_y(t) &=  \int_{-\infty}^{\infty} \frac{1}{\sqrt{2}\Gamma(1/2)} [\Tilde{y}(1-2t)^{-1}]^{-1/2}e^{-\Tilde{y}/2}(1-2t)^{-1}d\Tilde{y}\\
-     &=  (1-2t)^{-1/2} \int_{-\infty}^{\infty} \frac{1}{\sqrt{2}\Gamma(1/2)}\\ \Tilde{y}^{-1/2}e^{-\Tilde{y}/2}d\Tilde{y}
+     &=  (1-2t)^{-1/2} \int_{-\infty}^{\infty} \frac{1}{\sqrt{2}\Gamma(1/2)} \Tilde{y}^{-1/2}e^{-\Tilde{y}/2}d\Tilde{y}\\
       &=  (1-2t)^{-1/2}
  \end{align*}
 From recognizing the pdf of  $\chi^2_1$ which integrates to 1. Since the two MGFs are the same, we have $Y \sim \chi^2_1$. Now we show that $cov(Y, Z)=0$.
