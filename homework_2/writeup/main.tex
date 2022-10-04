@@ -9,7 +9,7 @@
 
 \begin{document}
  
-\title{Homework 1}
+\title{Homework 2}
 \author{Juliette Franqueville\\
 }
 \maketitle
@@ -292,5 +292,64 @@ k\{1 + k \text{log}(y_j /\lambda)\}] \\
 &k(k + 1)/\lambda^2 \sum(y_j /\lambda)^k - nk\lambda^{-2}
 \end{bmatrix}
 \end{center}
+
+Using Newton, I found $(\lambda, k) = (181.4, 5.98)$. The plots below show the log likelihood and the Weibull pdf with the mle parameters and observed data.
+
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.55]{homework_2/figures/mle_weibull.png}
+    \caption{Log likelihood and mle parameters}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.55]{homework_2/figures/weibull_data_fit.png}
+    \caption{Histogram of the data and density found using MLE.}
+    \label{fig:my_label}
+\end{figure}
+
+To calculate the standard error, the observed information can be used as an approximation. We also use the fact that $(\theta_{MLE} - \theta)^T J(\theta_{MLE})(\theta_{MLE} -\theta) \approx \chi^2_2$. $\chi^2_{\alpha}$ for $alpha = 0.1$ (right tailed) is 4.605. J is evaluated at $\theta_{MLE}$. We then have:
+
+\begin{align*}
+    P[(\theta_{MLE} - \theta)^T J(\theta_{MLE})(\theta_{MLE} - \theta) \leq 4.605] = 0.90
+\end{align*}
+
+So we want the ellipse satisfying:
+
+\begin{align*}
+    (\theta_{MLE} - \theta)^T J(\theta_{MLE})(\theta_{MLE} - \theta) = 4.605
+\end{align*}
+To draw this ellipse, we use the Cholesky decomposition of $J$.
+
+\begin{align*}
+     & (\theta_{MLE} - \theta)^T J(\theta_{MLE})(\theta_{MLE} - \theta)\\
+     &=  (\theta_{MLE} - \theta)^T LL^T(\theta_{MLE})(\theta_{MLE} - \theta)\\
+       &=  [L^T(\theta_{MLE} - \theta)^T] [L^T(\theta_{MLE})(\theta_{MLE} - \theta)]
+\end{align*}
+
+First we take linearly spaced angles $\phi$ between 0 and $2\pi$ and transform them using:
+
+\begin{align*}
+    X = \theta_{MLE} + 4.605^{1/2} L^{-T} [cos \phi, sin\phi]
+\end{align*}
+This results in the figure shown below.
+
+
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.55]{homework_2/figures/weibull_se.png}
+    \caption{Standard error ellipse for the mle parameters.}
+    \label{fig:my_label}
+\end{figure}
+
+\subsection*{(7) For a Weibull$(k,\lambda$) distribution, design a
+simulation study to show that \\ $(\theta_{MLE})^TJ)(\theta_{MLE})\xrightarrow[]{} \chi^2_2$ and $W(\theta) \xrightarrow[]{}  \chi^2_2$}.
+
+I built the simulations using $(\lambda, k) = (0.5, 2)$ and re-used the Newton-Raphson code I had used for the previous question. I ran it for 1,000 iterations with $5,000$ samples in each. The plots below show that that  $(\theta_{MLE})^TJ)(\theta_{MLE})\xrightarrow[]{} \chi^2_2$ and $W(\theta) \xrightarrow[]{}  \chi^2_2$.
+
+
 
 \end{document}
