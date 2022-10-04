@@ -113,9 +113,16 @@ The ratio is independent of $\mu$ when $\sum x_i^2 = \sum y_i^2$ and independent
       \text{SE}(\mu) =  [\frac{n}{\mu^2} (2+1/c)]^{-1/2}
  \end{align*}
  
-We would plug $\mu_{MLE}$ for $\mu$. Finally, to show that the distribution of $\bar{Y}^2/S^2$ does not depend on $\mu$, we use the fact that $y_i/\mu \sim N(1, c)$. Since $S^2 =  (n-1)^{-1} \sum(x_i-\mu)^2$,  $\bar{Y}^2/S^2$  cannot depend on $\mu$.
- 
+We would plug $\mu_{MLE}$ for $\mu$. Finally, to show that the distribution of $\bar{Y}^2/S^2$ does not depend on $\mu$, we use the fact that $y_i/\mu \sim N(1, c)$. Since $S^2 =  (n-1)^{-1} \sum(x_i-\mu)^2$,  $\bar{Y}^2/S^2$  cannot depend on $\mu$. The figure confirms this using simulated data:
 
+
+ 
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.55]{homework_2/figures/no_dept.png}
+    \caption{Histogram for question (3) (a)}
+    \label{fig:my_label}
+\end{figure}
  
  
 \subsection*{(3)  (a) Draw a random sample of size $n = 2$0 from a $\text{Cauchy}(0,1)$ distribution. Compute $\bar{y}n$. Repeat this $B = 1000$ times. Draw a histogram of the sampled $\bar{y}n$ values, superimposed over a $\text{Cauchy(0,1)}$ density.}
@@ -193,7 +200,7 @@ and
     \frac{\partial \mathcal{L}(\mu, \sigma^2)}{\partial \mu} &= 0 \\
     -\frac{1}{2\sigma^2} \sum -2(y_i-\mu)&= 0 \\
      \sum y_i-n\mu&= 0 \\
-     \sum \mu&= \bar{y} \\
+     \mu&= \bar{y} \\
 \end{align*}
 
 \begin{align*}
@@ -242,7 +249,6 @@ In order to maximize $L(\theta)$, it is obvious that $\theta = max(y_i)$ because
           &= 1 -  (1-t/n)^n\\
 \end{align*}
 
-and $\lim_{n\to\infty}  1 -  (1-t/n)^n = 1-\text{exp}(-t)$, which is the cdf of $\exp(1)$. So we have shown that $ z_n = \frac{n(\theta-\hat{\theta}_{MLE})}{\theta} \xrightarrow[]{D} E$, where E is exponential. This result is illustrated in the plot below.
 
 \begin{figure}[!h]
     \centering
@@ -250,5 +256,41 @@ and $\lim_{n\to\infty}  1 -  (1-t/n)^n = 1-\text{exp}(-t)$, which is the cdf of 
     \caption{Simulation illustrating proof shown above.}
     \label{fig:my_label}
 \end{figure}
+
+\subsection*{(6)  Using the method of maximum likelihood, fit a Weibull distribution to these data . Also find an approximate 90\% joint confidence region for the parameters $(k, \lambda)$. Supplement your analysis with appropriate plots.}
+
+Gradient ascent did not converge well for this, so I used Newton-Raphson. The log likelihood, first derivatives and observed information were:
+
+\begin{align*}
+    \mathcal{L}(k, \lambda) &= \sum \text{log} \frac{k}{\lambda} \left(\frac{x_i}{\lambda}\right)^{k-1}e^{-(x_i/\lambda)^k}\\
+    &=  n\text{log} k - n\text{log} \lambda + (k-1)\sum \text{log}(x_i/\lambda) -\sum(x_i/\lambda)^k
+\end{align*}
+
+
+\begin{align*}
+   \frac{\partial}{\partial k}\mathcal{L}(k, \lambda) &=  \frac{\partial}{\partial k}\mathcal{L} n\text{log} k - n\text{log} \lambda + (k-1)\sum \text{log}(x_i/\lambda) -\sum(x_i/\lambda)^k\\
+   &= n/k + \sum \text{log}(x_i/\lambda)-\sum (x_i/\lambda)^k \text{log} (x_i/\lambda)
+\end{align*}
+
+\begin{align*}
+   \frac{\partial}{\partial \lambda}\mathcal{L}(k, \lambda) &=  \frac{\partial}{\partial \lambda} n\text{log} k - n\text{log} \lambda + (k-1)\sum \text{log}(x_i/\lambda) -\sum(x_i/\lambda)^k\\
+   &= -nk/\lambda + k/\lambda \sum (x_i/\lambda)^k
+\end{align*}
+
+The observed information was:
+
+
+
+\begin{center}
+    \begin{bmatrix}
+
+n/k^2 + \sum(y_j /\lambda)^k\{\text{log}(y_j /\lambda)\}^2
+
+& \lambda^{-1} \sum[1 - (y_j - \lambda)^
+k\{1 + k \text{log}(y_j /\lambda)\}] \\
+\lambda^{-1} \sum[1 - (y_j -\lambda)^k\{1 + k log(y_j /\lambda)\}]
+&k(k + 1)/\lambda^2 \sum(y_j /\lambda)^k - nk\lambda^{-2}
+\end{bmatrix}
+\end{center}
 
 \end{document}
