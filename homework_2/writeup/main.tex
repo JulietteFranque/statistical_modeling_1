@@ -37,7 +37,7 @@ The observed information matrix, $-\frac{\partial \mathcal{L}(\boldsymbol{\theta
     \begin{bmatrix}
 
 \frac{n}{\sigma^2} & \frac{n(\bar{y}-\mu)}{\sigma^4} \\
- \frac{n(\bar{y-\mu})}{\sigma^4} & \frac{n}{2\sigma^4} + \frac{1}{\sigma^6}\sum(y_i-\mu)^2)
+ \frac{n(\bar{y}-\mu)}{\sigma^4}  & \frac{n}{2\sigma^4} + \frac{1}{\sigma^6}\sum(y_i-\mu)^2)
 \end{bmatrix}
 \end{center}
 and the expected information matrix, $E\left(-\frac{\partial \mathcal{L}(\boldsymbol{\theta})}{\boldsymbol{\theta}^T \boldsymbol{\theta}}\right)$
@@ -47,19 +47,77 @@ and the expected information matrix, $E\left(-\frac{\partial \mathcal{L}(\boldsy
 \begin{center}
     \begin{bmatrix}
 
-\frwac{n}{\sigma^2} & 0\\
-0 & -\frac{n}{2\sigma^4} + \frac{1}{\sigma^6}\sum(y_i-\mu)^2)
+\frac{n}{\sigma^2} & 0\\
+0 & \frac{n}{2\sigma^4} 
 \end{bmatrix}
 \end{center}
 
 
-Most terms are evident, except $E$ 
+Most terms are evident, except 
 
-\subsection*{(2)  For $y_1,.., y_n \sim \mathcal{N}(\mu,\sigma^2 )$, show that $s = (\bar{y},s^2 )$ are sufficient. Also, find the observed and the expected information matrices}
+\begin{align*}
+    E\left[ -\frac{n}{2\sigma^4} + \frac{1}{\sigma^6}\sum(y_i-\mu)^2)\right] &=- \frac{n}{2\sigma^4}+\frac{1}{\sigma^6}E\left(\sum y_i^2-2\mu \sum y_i+n\mu^2\right)\\ &=- \frac{n}{2\sigma^4}+\frac{n}{\sigma^6}[(var(y)+E(y)^2-2\mu E(\bar{y})+\mu^2)]\\
+    &=- \frac{n}{2\sigma^4}+\frac{n}{\sigma^6}[\sigma^2+\mu^2-2\mu^2+\mu^2]\\ &=\frac{n}{2\sigma^4}
+\end{align*}
 
+\subsection*{(2)   If $Y_1,..., Y_n\overset{\text{iid}}{\sim} N(\mu, c \mu^2)$, where c is a known constant, show that the minimal sufficient statistic for $\mu$ is the same as for the $ N(\mu, c \mu^2)$ distribution. Find the maximum likelihood
+estimate of µ and give its large-sample standard error. Show that the distribution of $\bar{Y}^2/S^2$ does not depend on $\mu$.}
 
+First we find the minimal sufficient statistics for $N(\mu, \sigma^2)$. We find:
 
+\begin{align*}
+    \frac{f(x)}{f(y)} &= \frac{\exp\left(-\frac{\sum (x-\mu)^2}{2\sigma^2}\right)}{\exp\left(-\frac{\sum (y-\mu)^2}{2\sigma^2}\right)}\\
+    &= \exp\left(-\frac{1}{2\sigma^2}[\sum(x-\mu)^2 - \sum(y-\mu)^2]\right)\\
+     &= \exp\left(-\frac{1}{2\sigma^2}[\sum x_i^2 - \sum y_i^2 - 2\mu(\sum x_i - \sum y_i)\right)
+\end{align*}
 
+The ratio is independent of $\mu$ when $\sum x_i^2 = \sum y_i^2$ and independent of $\sigma^$ when  $\sum x_i^2 = \sum y_i^2$ and  $\sum x_i = \sum y_i$, so $\sum x_i^2$ and $\sum x_i$ are minimally sufficient statistics. Similarly for $N(\mu, c\mu^2)$
+\begin{align*}
+    \frac{f(x)}{f(y)} 
+     &= \exp\left(-\frac{1}{2\mu^2c}[\sum x_i^2 - \sum y_i^2 - 2\mu(\sum x_i - \sum y_i)\right)
+\end{align*}
+
+ $\sum x_i^2$ and $\sum x_i$ are minimally sufficient statistics.\\ For  $N(\mu, c\mu^2)$, we have:
+ 
+ \begin{align*}
+     L(\mu)  &= \prod (2\pi c\mu^2)^{-1/2} \text{exp}\left(-\frac{(y_i-\mu)^2}{2c\mu^2}\right) \\
+   &=(2\pi c\mu^2)^{-n/2}\text{exp}\left(-\frac{\sum (y_i-\mu)^2}{2c\mu^2}\right) \\
+   \mathcal{L}(\mu)&= -\frac{n}{2}log(2\pi c) - \frac{n}{2}log(\mu^2) - -\frac{\sum (y_i-\mu)^2}{2c\mu^2}\\
+   \frac{\partial  \mathcal{L}(\mu)}{\partial \mu} &= -\frac{n}{\mu} - \frac{1}{c} \left( \frac{\sum x_i}{\mu^2}-\frac{\sum x_i^2}{\mu^3}\right)
+ \end{align*}
+ Set the derivative to 0:
+ \begin{align*}
+      -\frac{n}{\mu} - \frac{1}{c} \left( \frac{\sum x_i}{\mu^2}-\frac{\sum x_i^2}{\mu^3}\right) &= 0\\
+      -n\mu^2 - \frac{1}{c} ( \sum x_i-\sum x_i^2\mu) &= 0\\
+       nc\mu^2 +\sum x_i^2\mu  -   \sum x_i&= 0\\
+ \end{align*}
+ 
+ Solving for $\mu$:
+ 
+\begin{align*}
+     \mu = \frac{-\sum x_i + [(\sum x_i)^2 + 4nc \sum x_i^2]^{1/2}}{2nc}
+ \end{align*}
+ 
+ for $\bar{x} > 0$, and 
+ 
+ \begin{align*}
+     \mu = \frac{-\sum x_i - [(\sum x_i)^2 + 4nc \sum x_i^2]^{1/2}}{2nc}
+ \end{align*}
+ 
+ otherwise (I checked the signs numerically, as suggested by Dr.\ Sarkar). We can estimate the standard error from the Fisher information matrix (se $= I^{-1/2}$) (which is a scalar here).
+ 
+ \begin{align*}
+     \frac{\partial ^2 \mathcal{L}(\mu)}{\partial \mu^2} = \frac{n}{\mu^2}-\frac{1}{c}\left[\frac{3\sum x_i^2}{\mu^4}-\frac{2\sum x_i}{\mu^3}\right] \\
+     E\left[\frac{\partial ^2 \mathcal{L}(\mu)}{\partial \mu^2}\right] = \frac{n}{\mu^2}-\frac{1}{c}\left[\frac{3 n(\mu^2c+\mu^2)}{\mu^4}-\frac{2n\mu}{\mu^3}\right] \\
+      E\left[\frac{\partial ^2 \mathcal{L}(\mu)}{\partial \mu^2}\right] =  -\frac{n}{\mu^2} (2+1/c)\\
+      \text{SE}(\mu) =  [\frac{n}{\mu^2} (2+1/c)]^{-1/2}
+ \end{align*}
+ 
+We would plug $\mu_{MLE}$ for $\mu$. Finally, to show that the distribution of $\bar{Y}^2/S^2$ does not depend on $\mu$, we use the fact that $y_i/\mu \sim N(1, c)$. Since $S^2 =  (n-1)^{-1} \sum(x_i-\mu)^2$,  $\bar{Y}^2/S^2$  cannot depend on $\mu$.
+ 
+
+ 
+ 
 \subsection*{(3)  (a) Draw a random sample of size $n = 2$0 from a $\text{Cauchy}(0,1)$ distribution. Compute $\bar{y}n$. Repeat this $B = 1000$ times. Draw a histogram of the sampled $\bar{y}n$ values, superimposed over a $\text{Cauchy(0,1)}$ density.}
 
 \begin{figure}[!h]
