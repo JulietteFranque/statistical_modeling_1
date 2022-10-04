@@ -32,6 +32,33 @@ The factorization theorem says that statistic $s$ is sufficient iif $f(y_{1:n}|\
 
 We recognize $h(y_{1:n}) =1 $ and $g(\bar{y}, s^2|\mu, \sigma^2)= (2\pi \sigma^2)^{-n/2}\text{exp}\left(-\frac{(n-1)s^2}{2\sigma^2}\right) \text{exp}\left(-\frac{n [\mu-\bar{y}]^2}{2\sigma^2}\right)$ is a sufficient statistic for $(\mu, \sigma^2)$.
 
+The observed information matrix, $-\frac{\partial \mathcal{L}(\boldsymbol{\theta})}{\boldsymbol{\theta}^T \boldsymbol{\theta}}$, is:
+\begin{center}
+    \begin{bmatrix}
+
+\frac{n}{\sigma^2} & \frac{n(\bar{y}-\mu)}{\sigma^4} \\
+ \frac{n(\bar{y-\mu})}{\sigma^4} & \frac{n}{2\sigma^4} + \frac{1}{\sigma^6}\sum(y_i-\mu)^2)
+\end{bmatrix}
+\end{center}
+and the expected information matrix, $E\left(-\frac{\partial \mathcal{L}(\boldsymbol{\theta})}{\boldsymbol{\theta}^T \boldsymbol{\theta}}\right)$
+
+
+
+\begin{center}
+    \begin{bmatrix}
+
+\frwac{n}{\sigma^2} & 0\\
+0 & -\frac{n}{2\sigma^4} + \frac{1}{\sigma^6}\sum(y_i-\mu)^2)
+\end{bmatrix}
+\end{center}
+
+
+Most terms are evident, except $E$ 
+
+\subsection*{(2)  For $y_1,.., y_n \sim \mathcal{N}(\mu,\sigma^2 )$, show that $s = (\bar{y},s^2 )$ are sufficient. Also, find the observed and the expected information matrices}
+
+
+
 
 \subsection*{(3)  (a) Draw a random sample of size $n = 2$0 from a $\text{Cauchy}(0,1)$ distribution. Compute $\bar{y}n$. Repeat this $B = 1000$ times. Draw a histogram of the sampled $\bar{y}n$ values, superimposed over a $\text{Cauchy(0,1)}$ density.}
 
@@ -158,5 +185,12 @@ In order to maximize $L(\theta)$, it is obvious that $\theta = max(y_i)$ because
 \end{align*}
 
 and $\lim_{n\to\infty}  1 -  (1-t/n)^n = 1-\text{exp}(-t)$, which is the cdf of $\exp(1)$. So we have shown that $ z_n = \frac{n(\theta-\hat{\theta}_{MLE})}{\theta} \xrightarrow[]{D} E$, where E is exponential. This result is illustrated in the plot below.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.4]{homework_2/figures/uniform.png}
+    \caption{Simulation illustrating proof shown above.}
+    \label{fig:my_label}
+\end{figure}
 
 \end{document}
