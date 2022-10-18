@@ -1,0 +1,92 @@
+\documentclass[11pt]{article}
+ 
+\usepackage[margin=.95in]{geometry} 
+\usepackage{amsmath,amsthm,amssymb, graphicx, multicol, array}
+ 
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+ 
+
+\begin{document}
+ 
+\title{Homework 3}
+\author{Juliette Franqueville\\
+}
+\maketitle
+
+\subsection*{(2) Show that binomial and negative binomial distributions belong to exponential families}
+
+For the binomial distribution:
+
+\begin{align*}
+    P(y) &= {n \choose y}p^y(1-p)^{n-y}\\
+    &=  {n \choose y}\text{exp}\{\text{log}[p^y(1-p)^{n-y}]\}\\
+     &=  {n \choose y}\text{exp}\{y\text{log}p +(n-y)\text{log}(1-p)\}\\
+     &=  {n \choose y}\text{exp}\left \{y\text{log}\frac{p}{1-p} +n\text{log}(1-p)\right \}
+\end{align*}
+
+We have 
+\begin{align*}
+    \theta &= \text{log}\frac{p}{1-p} \\
+    \text{exp}\theta &= \frac{p}{1-p} \\
+     \text{exp}\theta(1-p) &=p \\
+      \text{exp}\theta(1-p) &=p \\
+      \text{exp}\theta - p\text{exp}\theta &=p \\
+            \text{exp}  &=p(1+\text{exp}\theta) \\
+             p  &=\text{exp}\theta/(1+\text{exp}\theta) \\
+               1-p  &=1-\text{exp}\theta/(1+\text{exp}\theta) \\
+               &=1/(1+\text{exp}\theta) 
+\end{align*}
+So:
+
+\begin{align*}
+    P(y) &=  {n \choose y}\text{exp}\left \{y\text{log}\frac{p}{1-p} +n\text{log}(1-p)\right \}\\
+    &=  {n \choose y}\text{exp}\left \{y\text{log}\frac{p}{1-p} -n\text{log}[1+\text{exp}\theta]\right \}
+\end{align*}
+
+So we have $h(y) = {n \choose y}$, $\theta &= \text{log}\frac{p}{1-p}$ and $\psi(\theta) = n\text{log}[1+\text{exp}\theta]$
+
+For the negative binomial distribution:
+
+\begin{align*}
+    P(y) &= {y+r-1 \choose y}(1-p)^rp^y\\
+    &= {y+r-1 \choose y}\text{exp} \{ \text{log}(1-p)^rp^y \}\\
+     &= {y+r-1 \choose y}\text{exp} \{ r\text{log}(1-p) + y\text{log}p \}
+\end{align*}
+We have:
+\begin{align*}
+    \theta &= \text{log}p\\
+    p &= \text{exp}\theta\\
+    1-p &= 1-\text{exp}\theta
+\end{align*}
+
+So we have $h(y) = {y+r-1 \choose y}$, $\theta &= \text{log}p$ and $\psi(\theta) =  r\text{log}(1-\text{exp}\theta)$
+
+
+
+\subsection*{(3) Let $y \simBin(10,\theta)$. Also, let the observed value of $y = 3$. The prior is a mixture of Betas}
+
+\subsection*{(a) Find the posterior}
+
+Dropping constants, we have:
+
+\begin{align*}
+    P(\theta|) &\propto P(y|\theta)P(\theta)\\
+   & \propto \theta^3(1-\theta)^7 \left[\frac{\theta^9(1-\theta)^{19}}{B(10, 20)} + \frac{\theta^{19}(1-\theta)^9}{B(20, 10)}\right]\\
+    & \propto  \left[\frac{\theta^{12}(1-\theta)^{26}}{B(10, 20)} + \frac{\theta^{22}(1-\theta)^{16}}{B(20, 10)}\right]\\
+    & \propto  \left[\frac{B(13, 27)}{B(13, 27)}\frac{\theta^{12}(1-\theta)^{26}}{B(10, 20)} +\frac{B(23, 17)}{B(23, 17)} \frac{\theta^{22}(1-\theta)^{16}}{B(20, 10)}\right]\\
+     & \propto  \left[B(13, 27)\frac{Beta(13, 27)}{B(10, 20)} +B(23,  \frac{Beta(23, 17)}{B(20, 10)}\right]\\
+     & \propto  \pi_1 Beta(13, 27) + \pi_2 Beta(23, 17)
+\end{align*}
+
+With $\pi_1 = \frac{\frac{B(13, 27)}{B(10, 20)}}{\frac{B(13, 27)}{B(10, 20)} + \frac{B(23, 17)}{B(20, 10)}}$ and  $\pi_2 = \frac{\frac{B(23, 17)}{B(20, 10)}}{\frac{B(13, 27)}{B(10, 20)} + \frac{B(23, 17)}{B(20, 10)}}$
+
+
+\subsection*{(b) Plot the posterior superimposed on the prior}
+\subsection*{(c) Compute a 90\% posterior credible interval for $\theta$
+}
+
+To obtain the prior and posteriors, we sum the pdfs of the relevant betas. To find the 90\% posterior credible interval, we find value of $\theta$ corresponding to the location where the area under the pdf curve for the posterior is .05 and .95. 
+
+
+\end{document}
