@@ -14,6 +14,40 @@
 }
 \maketitle
 
+\subsection*{(1) (a) Show that $E(y | \theta) = 
+\xi(\theta)= \partial \psi(\theta) / \partial \theta$}
+
+Find the MGF of $y$:
+\begin{align*}
+    E(e^{ty}) &= \int e^{ty}P(y|\theta)dy\\
+    &=  \int h(y)e^{ty+\theta^Ty-\psi(\theta)}dy\\
+     &=  \int h(y)e^{(t+\theta)^Ty -\psi(\theta) + \psi(t+\theta) -\psi(\theta)}dy\\
+     &=  e^{\psi(t+\theta) -\psi(\theta)}\int h(y)e^{(t+\theta)^Ty -\psi(t+\theta)}dy\\
+     &= e^{\psi(t+\theta) -\psi(\theta)}
+\end{align*}
+
+\begin{align*}
+   \frac{\partial M_y(t)}{\partial t}\rvert_{t=0} = \psi'(\theta)
+\end{align*}
+
+\subsection*{(1) (b) Show that $E(\xi(\theta)) = y_0 / \lambda + c$
+and $E(\xi(\theta)|y) = (y_0 + n\bar{y})/(\lambda + n)$}
+
+\begin{align*}
+    E(\psi'(\theta)) &= \int P(\theta)\psi'(\theta)d\theta\\
+    &= \int h(y_0, \lambda)\text{exp}[\theta^Ty_0-\lambda \psi(\theta)]\psi'(\theta)d\theta\\
+     &= \int h(y_0, \lambda)\text{exp}[\theta^Ty_0-\lambda \psi(\theta)]\frac{1}{\lambda}[y_0 - (y_0-\lambda\psi'(\theta))]d\theta\\
+     &= 1/\lambda \int y_0 h(y_0, \lambda)\text{exp}[\theta^Ty_0-\lambda \psi(\theta)] - [y_0-\lambda\psi'(\theta)]\text{exp}[\theta^Ty_0-\lambda  \psi(\theta)] d\theta\\
+     &= y_0/\lambda - 1/\lambda \int  h(y_0, \lambda) [y_0-\lambda\psi'(\theta)]\text{exp}[\theta^Ty_0-\lambda  \psi(\theta)] d\theta\\
+     &= y_0/\lambda - 1/\lambda \int  h(y_0, \lambda) \frac{\partial}{\partial \theta}\text{exp}[\theta^Ty_0-\lambda  \psi(\theta)] d\theta\\
+      &= y_0/\lambda - 1/\lambda \frac{\partial}{\partial \theta} \int  h(y_0, \lambda) \text{exp}[\theta^Ty_0-\lambda  \psi(\theta)] d\theta\\
+      &= y_0/\lambda 
+\end{align*}
+
+
+We've shown that for the prior $P(\theta) = h(y_0, \lambda)\text{exp}(\theta^T y_0 - \lambda \psi(\theta))$, $E(\xi(\theta)) = \frac{y_0}{\lambda} + c$. We know that the posterior for $\theta$ has form $P(\theta|y, \lambda, y_0) =  h(y_0, \lambda)\text{exp}(\theta^T(y_0 + n\bar{y}) - (\lambda + n) \psi(\theta))$. So as before, $E(\xi(\theta)|y)$ will be the ratio of the two coefficients, $\frac{y_0+n\bar{y}}{\lambda+n}$. Also, I could not find where that $c$ integration constant came from since we are integrating from $-\infty$ to $+\infty$. I spoke to Dr Sarkar about it and he was not sure either, so I did not include it.
+
+
 \subsection*{(2) Show that binomial and negative binomial distributions belong to exponential families}
 
 For the binomial distribution:
@@ -60,11 +94,11 @@ We have:
     1-p &= 1-\text{exp}\theta
 \end{align*}
 
-So we have $h(y) = {y+r-1 \choose y}$, $\theta &= \text{log}p$ and $\psi(\theta) =  r\text{log}(1-\text{exp}\theta)$
+So we have $h(y) = {y+r-1 \choose y}$, $\theta &= \text{log}p$ and $\psi(\theta) =  -r\text{log}(1-\text{exp}\theta)$
 
 
 
-\subsection*{(3) Let $y \simBin(10,\theta)$. Also, let the observed value of $y = 3$. The prior is a mixture of Betas}
+\subsection*{(3) Let $y \sim Bin(10,\theta)$. Also, let the observed value of $y = 3$. The prior is a mixture of Betas}
 
 \subsection*{(a) Find the posterior}
 
@@ -85,7 +119,7 @@ With $\pi_1 = \frac{\frac{B(13, 27)}{B(10, 20)}}{\frac{B(13, 27)}{B(10, 20)} + \
 \subsection*{(b) Plot the posterior superimposed on the prior}
 \subsection*{(c) Compute a 90\% posterior credible interval for $\theta$}
 
-To obtain the prior and posteriors, we sum the pdfs of the relevant betas. To find the 90\% posterior credible interval, we find value of $\theta$ corresponding to the location where the area under the pdf curve for the posterior is .05 and .95. 
+To obtain the prior and posteriors, we sum the pdfs of the relevant betas. To find the 90\% posterior credible interval, we find the value of $\theta$ corresponding to the location where the area under the pdf curve for the posterior is .05 and .95. 
 
 \begin{figure}[!h]
     \centering
@@ -100,12 +134,12 @@ $p(\psi) \propto |I(\psi)|^{1/2}$}
 
 
 \begin{align*}
-    I(\psi) &= -E\left(\frac{\partial ^2\mathcal{L}(\psi)}{\partial \psi^2}\right)\\
-    &= -E\left(\frac{\partial^2\mathcal{L}(\psi)}{\partial \theta^2} \left[\frac{\partial \theta}{\partial \psi}\right]^2 + \frac{\partial \mathcal{L}}{\partial \theta} \frac{\partial ^2\psi}{\partial \theta^2}\right)\\
-     &= -\left[\frac{\partial \theta}{\partial \psi}\right]^2E\left(\frac{\partial^2\mathcal{L}(\psi)}{\partial \theta^2}\right)  -\frac{\partial ^2\psi}{\partial \theta^2}E\left(\frac{\partial \mathcal{L}(\psi)}{\partial \theta} \right)
+    I(\psi) &= -E\left(\frac{\partial ^2\mathcal{L}(\psi)}{\partial \psi \partial \psi^T}\right)\\
+    &= -E\left(\frac{\partial^2\mathcal{L}(\psi)}{\partial \theta \partial \theta^T} \left[\frac{\partial \theta}{\partial \psi}\right]^2 + \frac{\partial \mathcal{L}(\psi)}{\partial \theta} \frac{\partial ^2\psi}{\partial \theta \partial \theta^T}\right)\\
+     &= -\left[\frac{\partial \theta}{\partial \psi}\right]^2E\left(\frac{\partial^2\mathcal{L}(\psi)}{\partial \theta \partial \theta^T}\right)  -\frac{\partial ^2\psi}{\partial \theta \partial \theta^T}E\left(\frac{\partial \mathcal{L}(\psi)}{\partial \theta} \right)
 \end{align*}
 
-$E\left(\frac{\partial \mathcal{L}(\phi)}{\partial \theta} \right)$ is the score and its expectation is 0:
+$E\left(\frac{\partial \mathcal{L}(\psi)}{\partial \theta} \right)$ is the score and its expectation is 0:
 
 \begin{align*}
     E\left(\frac{\partial \mathcal{L}(\psi)}{\partial \theta} \right) &= \int^{\infty}_{-\infty} f(y|\psi)  \frac{\partial \mathcal{L}(\psi)}{\partial \theta} dy\\
@@ -118,17 +152,17 @@ $E\left(\frac{\partial \mathcal{L}(\phi)}{\partial \theta} \right)$ is the score
 So we have:
 
 \begin{align*}
-    I(\psi) &=-\left[\frac{\partial \theta}{\partial \psi}\right]^2E\left(\frac{\partial^2\mathcal{L}(\psi)}{\partial \theta^2}\right)  \\
+    I(\psi) &=-\left[\frac{\partial \theta}{\partial \psi}\right]^2E\left(\frac{\partial^2\mathcal{L}(\psi)}{\partial \theta \partial \theta^T}\right)  \\
     &= \left[\frac{\partial \theta}{\partial \psi}\right]^2 I(\theta)\\
 \end{align*}
 
 Then, 
 
 \begin{align*}
-    P(\psi) &= P(\theta) \left|\frac{\partial \psi}{\partial \theta}\right|^{-1}\\
-    &= |I(\theta)|^{1/2}\left|\frac{\partial \psi}{\partial \theta}\right|^{-1}\\
-     &= \left|I(\psi)\left[\frac{\partial \psi}{\partial \theta}\right]^2\right|^{1/2}\left|\frac{\partial \psi}{\partial \theta}\right|^{-1}\\
-     &= |I(\psi)|^{1/2}
+    P(\psi) &\propto P(\theta) \left|\text{det}\frac{\partial \psi}{\partial \theta}\right|^{-1}\\
+    &\propto \text{det}[I(\theta)]^{1/2}\left|\text{det}\frac{\partial \psi}{\partial \theta}\right|^{-1}\\
+     &\propto \text{det}\left[I(\psi)\left[\frac{\partial \psi}{\partial \theta}\right]^2\right]^{1/2}\left|\text{det}\frac{\partial \psi}{\partial \theta}\right|^{-1}\\
+     &\propto \text{det}[I(\psi)]^{1/2}
 \end{align*}
 \subsection*{(5) For the Poisson likelihood model $y_1\ldots y_n
  \sim Poisson(\lambda)$, Jeffrey’s (improper) prior was derived in class. Compute the corresponding posterior. Is it proper?}
@@ -144,7 +178,39 @@ We have:
     &= Ga\left(1/2 + \sum y_i, n \right)
     \end{align*}
     
-Since the posterior is a Gamma distribution, it is proper (integrates to 1).
+Since the posterior is a Gamma distribution, it is proper (integrates to 1) as long as $n > 0$.
+
+\subsection*{(6)  Consider the likelihood model$ y1, \ldots , y_n \sim N(\mu, \sigma)$, $\mu$ known. (a) Compute the Jeffreys’ prior for $\sigma^2$ }
+Note that we already derived the Fisher information matrix for the normal distribution is the previous homework.
+
+\begin{align*}
+    P(\sigma^2) &\propto |I(\sigma^2)|^{1/2}\\
+    &\propto [n/(2\sigma^4)]^{1/2}\\
+    &\propto 1/\sigma^2
+\end{align*}
+
+\subsection*{(b) Compute also the corresponding posterior}
+
+\begin{align*}
+    P(\sigma^2|\mu, y) &\propto P(\mu, y|\sigma^2)P(\sigma^2)\\
+    &\propto  \sigma^{-n}\text{exp}\left \{ \frac{\sum(x-\mu)^2}{\sigma^2}\right \} \frac{1}{\sigma^2}\\
+    &\propto  \sigma^{-n-2}\text{exp}\left \{ \frac{\sum(x-\mu)^2}{\sigma^2}\right \} \\
+     &\propto  \sigma^{2\frac{1}{2}{(-n-2)}}\text{exp}\left \{ \frac{\sum(x-\mu)^2}{\sigma^2}\right \} \\
+     &= IG\left(n/2, \frac{1}{2}\sum(x-\mu)^2\right) 
+\end{align*}
+
+
+\subsection*{(c) Draw a random sample of size 20 from a Normal(0, 1) distribution. Using these sampled values as data points and assuming the variance to now be unknown, plot the posterior superimposed on the general shape of the prior. (d) Compute a 90\% centered quantile based credible interval for $\sigma^2$. (e) Compute also a 90\% HPD interval for $\sigma^2$.}
+The plot below shows the  prior and posterior and the CIs. Note that the HPD interval was found by iteratively looking for the shortest 90\% interval.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.6
+    ]{homework_3/figures/poisson.png}
+    \caption{Prior / Posterior and CIs }
+    \label{fig:my_label}
+\end{figure}
+
 
 
 
