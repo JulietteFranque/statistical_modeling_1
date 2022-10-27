@@ -31,7 +31,7 @@ Find the MGF of $y$:
 \end{align*}
 
 \subsection*{(1) (b) Show that $E(\xi(\theta)) = y_0 / \lambda + c$
-and $E(\xi(\theta)|y) = (y_0 + n\bar{y})/(\lambda + n)$}
+and $E(\xi(\theta)|y) = (y_0 + n\bar{y})/(\lambda + n)$ + c}
 
 \begin{align*}
     E(\psi'(\theta)) &= \int P(\theta)\psi'(\theta)d\theta\\
@@ -45,7 +45,7 @@ and $E(\xi(\theta)|y) = (y_0 + n\bar{y})/(\lambda + n)$}
 \end{align*}
 
 
-We've shown that for the prior $P(\theta) = h(y_0, \lambda)\text{exp}(\theta^T y_0 - \lambda \psi(\theta))$, $E(\xi(\theta)) = \frac{y_0}{\lambda} + c$. We know that the posterior for $\theta$ has form $P(\theta|y, \lambda, y_0) =  h(y_0, \lambda)\text{exp}(\theta^T(y_0 + n\bar{y}) - (\lambda + n) \psi(\theta))$. So as before, $E(\xi(\theta)|y)$ will be the ratio of the two coefficients, $\frac{y_0+n\bar{y}}{\lambda+n}$. Also, I could not find where that $c$ integration constant came from since we are integrating from $-\infty$ to $+\infty$. I spoke to Dr Sarkar about it and he was not sure either, so I did not include it.
+We've shown that for the prior $P(\theta) = h(y_0, \lambda)\text{exp}(\theta^T y_0 - \lambda \psi(\theta))$, $E(\xi(\theta)) = \frac{y_0}{\lambda}$. We know that the posterior for $\theta$ has form $P(\theta|y, \lambda, y_0) =  h(y_0, \lambda)\text{exp}(\theta^T(y_0 + n\bar{y}) - (\lambda + n) \psi(\theta))$. So as before, $E(\xi(\theta)|y)$ will be the ratio of the two coefficients, $\frac{y_0+n\bar{y}}{\lambda+n}$. Also, I could not find where that $c$ integration constant came from since we are integrating from $-\infty$ to $+\infty$. I spoke to Dr Sarkar about it and he was not sure either, so I did not include it.
 
 
 \subsection*{(2) Show that binomial and negative binomial distributions belong to exponential families}
@@ -113,8 +113,7 @@ Dropping constants, we have:
      & \propto  \pi_1 Beta(13, 27) + \pi_2 Beta(23, 17)
 \end{align*}
 
-With $\pi_1 = \frac{\frac{B(13, 27)}{B(10, 20)}}{\frac{B(13, 27)}{B(10, 20)} + \frac{B(23, 17)}{B(20, 10)}}$ and  $\pi_2 = \frac{\frac{B(23, 17)}{B(20, 10)}}{\frac{B(13, 27)}{B(10, 20)} + \frac{B(23, 17)}{B(20, 10)}}$
-
+With $\pi_1 = \frac{\frac{B(13, 27)}{B(10, 20)}}{\frac{B(13, 27)}{B(10, 20)} + \frac{B(23, 17)}{B(20, 10)}}$ and  $\pi_2 = \frac{\frac{B(23, 17)}{B(20, 10)}}{\frac{B(13, 27)}{B(10, 20)} + \frac{B(23, 17)}{B(20, 10)}}$ since we need $\pi_1 + \pi_2 = 1$.
 
 \subsection*{(b) Plot the posterior superimposed on the prior}
 \subsection*{(c) Compute a 90\% posterior credible interval for $\theta$}
@@ -128,15 +127,15 @@ To obtain the prior and posteriors, we sum the pdfs of the relevant betas. To fi
     \caption{Prior / Posterior and CI}
     \label{fig:my_label}
 \end{figure}
+\newpage
+\subsection*{(4) Prove that Jeffreys’ priors satisfy the invariance principle: starting with $p(\theta) \propto [\text{det}I(\theta)]^{1/2}$, show that the induced prior on $\psi = g(\theta)$, where $g$ is one-one, is
+$p(\psi) \propto [\text{det}I(\psi)]^{1/2}$}
 
-\subsection*{(4) Prove that Jeffreys’ priors satisfy the invariance principle: starting with $p(\theta) \propto |I(\theta)|^{1/2}$, show that the induced prior on $\psi = g(\theta)$, where $g$ is one-one, is
-$p(\psi) \propto |I(\psi)|^{1/2}$}
-
-
+Using the chain rule:
 \begin{align*}
     I(\psi) &= -E\left(\frac{\partial ^2\mathcal{L}(\psi)}{\partial \psi \partial \psi^T}\right)\\
-    &= -E\left(\frac{\partial^2\mathcal{L}(\psi)}{\partial \theta \partial \theta^T} \left[\frac{\partial \theta}{\partial \psi}\right]^2 + \frac{\partial \mathcal{L}(\psi)}{\partial \theta} \frac{\partial ^2\psi}{\partial \theta \partial \theta^T}\right)\\
-     &= -\left[\frac{\partial \theta}{\partial \psi}\right]^2E\left(\frac{\partial^2\mathcal{L}(\psi)}{\partial \theta \partial \theta^T}\right)  -\frac{\partial ^2\psi}{\partial \theta \partial \theta^T}E\left(\frac{\partial \mathcal{L}(\psi)}{\partial \theta} \right)
+    &= -E\left(\frac{\partial^2\mathcal{L}(\psi)}{\partial \theta \partial \theta^T} \left[\frac{\partial \theta}{\partial \psi}\right]^2 + \frac{\partial \mathcal{L}(\psi)}{\partial \theta} \frac{\partial ^2\theta}{\partial \psi \psi \theta^T}\right)\\
+     &= -E\left(\frac{\partial^2\mathcal{L}(\psi)}{\partial \theta \partial \theta^T}\right)\left[\frac{\partial \theta}{\partial \psi}\right]^2  -E\left(\frac{\partial \mathcal{L}(\psi)}{\partial \theta} \right)\frac{\partial ^2\psi}{\partial \theta \partial \theta^T}
 \end{align*}
 
 $E\left(\frac{\partial \mathcal{L}(\psi)}{\partial \theta} \right)$ is the score and its expectation is 0:
@@ -152,8 +151,8 @@ $E\left(\frac{\partial \mathcal{L}(\psi)}{\partial \theta} \right)$ is the score
 So we have:
 
 \begin{align*}
-    I(\psi) &=-\left[\frac{\partial \theta}{\partial \psi}\right]^2E\left(\frac{\partial^2\mathcal{L}(\psi)}{\partial \theta \partial \theta^T}\right)  \\
-    &= \left[\frac{\partial \theta}{\partial \psi}\right]^2 I(\theta)\\
+    I(\psi) &=-E\left(\frac{\partial^2\mathcal{L}(\psi)}{\partial \theta \partial \theta^T}\right)\left[\frac{\partial \theta}{\partial \psi}\right]^2  \\
+    &= I(\theta) \left[\frac{\partial \theta}{\partial \psi}\right]^2\\
 \end{align*}
 
 Then, 
@@ -180,8 +179,8 @@ We have:
     
 Since the posterior is a Gamma distribution, it is proper (integrates to 1) as long as $n > 0$.
 
-\subsection*{(6)  Consider the likelihood model$ y1, \ldots , y_n \sim N(\mu, \sigma)$, $\mu$ known. (a) Compute the Jeffreys’ prior for $\sigma^2$ }
-Note that we already derived the Fisher information matrix for the normal distribution is the previous homework.
+\subsection*{(6)  Consider the likelihood model $ y_1, \ldots , y_n \sim N(\mu, \sigma)$, $\mu$ known. (a) Compute the Jeffreys’ prior for $\sigma^2$ }
+Note that we already derived the Fisher information matrix for the normal distribution in the previous homework.
 
 \begin{align*}
     P(\sigma^2) &\propto |I(\sigma^2)|^{1/2}\\
