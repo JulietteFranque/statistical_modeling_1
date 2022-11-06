@@ -1,1 +1,82 @@
-.
+\documentclass[11pt]{article}
+ 
+\usepackage[margin=.95in]{geometry} 
+\usepackage{amsmath,amsthm,amssymb, graphicx, multicol, array}
+ 
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+ 
+
+\begin{document}
+ 
+\title{Homework 3}
+\author{Juliette Franqueville\\
+}
+\maketitle
+
+\subsection*{(2) Consider again a normal likelihood model but with NIP $p(\mu, \sigma^2) \propto \sigma^{-2}$.}
+
+\subsection*{(b) Find out the marginal posteriors $p(\mu |y_{1:n})$ and $p(\sigma^2 |y_{1:n})$.}
+
+We use the joint density and integrate w.r.t $\mu$ and $\sigma^2$.
+\begin{align*}
+    P(\sigma^2|y) &\propto \int P(\sigma^2, \mu|y)d\mu \\
+    &\propto \int P(\sigma^2, \mu|y)d\mu \\
+    &\propto \int \sigma^{-(n/2 + 1)}e^{\frac{-1}{2\sigma^2}[(n-1)s^2+n(\mu-\bar{y})^2]}d\mu \\
+    &\propto \sigma^{-(n/2 + 1)}e^{\frac{-1}{2\sigma^2}(n-1)s^2} \int e^{\frac{-1}{2\sigma^2}[n(\mu-\bar{y})^2]}d\mu \\
+     &\propto \sigma^{-(n/2 + 1)}e^{\frac{-1}{2\sigma^2}[(n-1)s^2} (\sigma^2)^{1/2} \\
+     &\propto \sigma^{-\left(\frac{n-1}{2}\right)- 1}e^{\frac{-1}{2\sigma^2}(n-1)s^2}\\
+     &= IG\left( \frac{n-1}{2}, \frac{1}{2}(n-1)s^2\right)
+\end{align*}
+
+
+\begin{align*}
+    P(\mu|y) &\propto \int P(\sigma^2, \mu|y)d\sigma^2 \\
+    &\propto \int P(\sigma^2, \mu|y)d\sigma^2 \\
+    &\propto \int \sigma^{-(n/2 + 1)}e^{\frac{-1}{2\sigma^2}[(n-1)s^2+n(\mu-\bar{y})^2]}
+\end{align*}
+
+\subsection*{(3) For a multinomial likelihood model with K categories, show that the Jeffreys’ prior for the category probabilities is $Dir(1/2, \ldots, 1/2)$.}
+
+For the multinomial distribution:
+
+\begin{align*}
+   \mathcal{L}(y_1, \ldots y_k| n, p_1 \ldots p_k) &= \text{log} \frac{n}{x_1! \ldots x_k!} \prod p_i^{x_i}\\
+   &= \text{log} \frac{n}{x_1! \ldots x_k!}  + \sum \text{log} p_i^{x_i}
+\end{align*}
+
+
+\begin{align*}
+   \frac{\partial}{\partial p_i}\mathcal{L}(y_1, \ldots y_k| n, p_1 \ldots p_k) 
+   &=   \frac{x_i}{p_i}\\
+   \frac{\partial^2}{\partial p_i \partial p_j}\mathcal{L}(y_1, \ldots y_k| n, p_1 \ldots p_k) &= \begin{cases}
+  -\frac{x_i}{p_i^2},  &  i = j \\
+  0, & \text{otherwise}
+\end{cases}
+\end{align*}
+
+In order words, this is a $k$ by $k$ diagonal matrix with diagonal elements $ -x_i/p_i^2$. We also have $-E(-x_i/p_i^2)  = E(x_i)/p_i^2 = n p_i/p_i^2 = n/p_i$, so the information matrix is
+
+\begin{align*}
+    I(p_1, \dots, p_k) &=  \begin{bmatrix}
+    n/p_1 & & \\
+    & \ddots & \\
+    & & n/p_k
+  \end{bmatrix}
+\end{align*}
+
+and Jeffreys prior is:
+
+\begin{align*}
+    p_1, 
+    \ldots, p_n&\propto \text{det}\begin{bmatrix}
+    n/p_1 & & \\
+    & \ddots & \\
+    & & n/p_k
+  \end{bmatrix}^{1/2}\\
+  &\propto \prod p_k^{-1/2}\\
+  &\propto \prod p_k^{1/2-1}\\
+  &\propto Dir(1/2, \dots 1/2)
+\end{align*}
+
+\end{document}
