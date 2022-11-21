@@ -167,4 +167,23 @@ I chose $\alpha=\beta=0.5$
 For $\rho$ [0.70, 0.80] \\
 For $\sigma^2$ [0.90, 1.10] \\
 
+
+\subsection*{(5)}
+The general approach is:
+\begin{itemize}
+    \item Find full conditionals
+    \item Initialize all parameters, I did this randomly 
+    \item Update the parameters (2,000 iterations) by drawing from the full conditionals while recording the traces
+    \item Burn and thin (burn = 500, thin = 2)
+\end{itemize}
+
+The conditionals are:
+
+\begin{align*}
+z_i &\sim mult(1, \boldsymbol{\pi}_i)\\
+    \sigma_k^2 &\sim IG(\alpha + \sum 1(z_i = k)/2,  \sum 1(z_i = k)(y_i-\mu_k)^2/2 + b_0)\\
+    \mu_k &\sim \mathcal{N}(\mu_k', \sigma_k^2'),  \hspace{10}  \sigma_k^2' = \frac{\sigma_k^2\sigma_0^2}{\sigma_0^2\sum 1(z_i = k) + \sigma_k^2}, \hspace{10} \mu_k = \sigma_k^2'[\sum 1(z_i = k)y_i/\sigma_k^2 + \mu_0/\sigma^2_0] \\
+    \boldsymbol{w}&\sim Dir(\alpha/K + \sum 1(z_i = 1), \alpha/K + \sum 1(z_i = 2), \ldots )
+\end{align*}
+
 \end{document}
