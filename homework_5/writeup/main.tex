@@ -35,7 +35,7 @@
 \newpage
 
 \subsection*{(b)}
-For $n=100$, the estimated mean and variance were 0.12 and 0.84, respectively. For $n=10,000$, they were 0.03 and 1.67. The means were close to the actual mean (0), but the variances were underestimated compared to the actual variance of $t_3$ (3). This is not suprising because the tails of the normal are not as wide as those of the $t$ distribution. In other words, the normal distribution does not fully cover the $t$ distribution, so the points far from the mean in the tails do not get sampled, which makes the variance too small. I redid this exercise with a uniform distribution that  covered $t_3$ better, and the variances were closer to 3.
+For $n=100$, the estimated mean and variance were 0.12 and 0.84, respectively. For $n=10,000$, they were 0.03 and 1.67. The means were close to the actual mean (0), but the variances were underestimated compared to the actual variance of $t_3$ (3). This is not surprising because the tails of the normal are not as wide as those of the $t$ distribution. In other words, the normal distribution does not fully cover the $t$ distribution, so the points far from the mean in the tails do not get sampled, which makes the variance too small. I redid this exercise with a uniform distribution that  covered $t_3$ better, and the variances were closer to 3.
 
 \subsection*{(2)}
 \begin{align*}
@@ -91,6 +91,35 @@ To get $(X_2|X_1)$, we simply swap $X_1$ ad $X_2$. We then use a Gibbs sampler t
       var(y_t) &= \frac{\sigma^2}{1-\rho^2}
 \end{align*}
 
+\subsection*{(b)}
+
+Let's find the covariance between $y_t, y_{t-1}$
+
+\begin{align*}
+    cov(y_t, y_{t-1}) &= cov(\mu + \rho(y_{t-1}-\mu) + \epsilon_t, y_{t-1})\\
+    &= cov(\rho y_{t-1}, y_{t-1})\\
+    &= \rho var(y_{t-1})\\
+    &= \rho var(y_{t})\\
+\end{align*}
+
+Then, 
+
+
+\begin{align*}
+    cov(y_t, y_{t-2}) &= cov(\mu + \rho(y_{t-1}-\mu) + \epsilon_t, y_{t-2})\\
+    &= cov(\rho y_{t-1}, y_{t-2})\\
+    &= \rho cov(y_{t}, y_{t-1})\\
+    &= \rho^2 var(y_{t})\\
+\end{align*}
+
+And so on. We easily see the pattern $cov(y_t, y_{t-k}) = \rho^kvar(y_t)$, and therefore,
+
+\begin{align*}
+    corr(y_t, y_{t-k}) &= cov(y_t, y_{t-k})/[var(y_t)var(y_{t-k})]^{1/2}\\
+    &=\rho^k var(y_{t}) / var(y_{t})\\
+    &=\rho^k
+\end{align*}
+
 \subsection*{(c)}
 \begin{align*}
     E(y_t) &= \mu + \rho E(y_{t-1}) - \mu\rho + E(\epsilon_t)\\
@@ -101,10 +130,27 @@ To get $(X_2|X_1)$, we simply swap $X_1$ ad $X_2$. We then use a Gibbs sampler t
 
 \subsection*{(d)}
 \begin{align*}
-    E(y_t) &= \mu + \rho E(y_{t-1}) - \mu\rho + E(\epsilon_t)\\
-    &= \mu + \rho E(y_{t}) - \mu\rho\\
-    E(y_t)[1-\rho] &= \mu[1-\rho]\\
-    E(y_t) &= \mu
+var(\bar{y}_n) &= \frac{1}{n^2}var(\sum y_i)\\
+&= \frac{1}{n^2}[\sum var(y_i) + 2\sum cov(y_i, y_j)]\\  
+&= \frac{1}{n^2}[\sum \sigma^2/(1-\rho^2) + 2\sum   (n-j)\rho^j \sigma^2/(1-\rho^2)]\\
+&= \frac{1}{n^2}\frac{\sigma^2}{1-\rho^2}[n  + 2\sum   (n-j)\rho^j] \\
+\end{align*}
+
+\subsection*{(e)}
+
+\begin{align*}
+nvar(\bar{y}_n)
+&= \frac{1}{n}\frac{\sigma^2}{1-\rho^2}[n  + 2\sum   (n-j)\rho^j]\\
+&= \frac{\sigma^2}{1-\rho^2}[1  + \frac{2}{n}\sum   (n-j)\rho^j]\\
+&= \frac{\sigma^2}{1-\rho^2}[1  + 2\sum   \rho^j-j\rho^j/n]
+\end{align*}
+
+
+
+\subsection*{(f)} I did not have time to figure out how to prove this. So instead, I confirmed this was true with a simulation. I set $\rho = 0.75$ and $\sigma^2 = 1$. For $n$ ranging from 1 to 100,000, I calculated $nvar(\bar{y}_n)$ the result in (e). Then, I plotted this as a function of $n$ and also plotted $\sigma^2/(1−\sigma)^2$, and the former converged to the latter as $n$ approched infinity. I attached the plot.
+
+\begin{align*}
+
 \end{align*}
 
 \subsection*{(4) (a)}
@@ -216,5 +262,13 @@ z_i &\sim mult(1, \boldsymbol{\pi}_i)\\
 \end{align*}
 
 The plot below shows the fitted posterior (mean) and the data for various Ks.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.6
+    ]{../figures/bivariate.png}
+    \caption{Summary of results}
+    \label{fig:my_label}
+\end{figure}
 
 \end{document}
