@@ -195,5 +195,26 @@ z_i &\sim mult(1, \boldsymbol{\pi}_i)\\
     \label{fig:my_label}
 \end{figure}
 
+Note: I used the same code for questions (5) and (6) given that the IW distribution with only one dimension is the same as IG. Similarly the multivariate normal in the Python package Scipy can be used even if the covariance matrix is a scalar.
+
+\subsection*{(5)}
+As before, the general approach is:
+\begin{itemize}
+    \item Find full conditionals
+    \item Initialize all parameters, I did this randomly 
+    \item Update the parameters (2,000 iterations) by drawing from the full conditionals while recording the traces
+    \item Burn and thin (burn = 500, thin = 2)
+\end{itemize}
+
+The only difference it that the IG is replaced by the IW distribution and the normal update is now multidimensional. I derived the conditional posteriors for the multidimensional case, which look similar as those for the previous question:
+
+\begin{align*}
+z_i &\sim mult(1, \boldsymbol{\pi}_i)\\
+    \boldsymbol{\Sigma_k} &\sim IW(\nu_0 + \sum 1(z_i = k),  \Psi + \Psi_0), \hspace{10} \Psi =  \sum 1(z_i = k)(X_i-\boldsymbol{\mu}_k)(X_i-\boldsymbol{\mu}_k)^T\\
+    \boldsymbol{\mu}_k &\sim \mathcal{N}( \boldsymbol{\mu}_k',  \boldsymbol{\Sigma_k}'),  \hspace{10}  \boldsymbol{\Sigma_k}' = \sum 1(z_i = 1) \boldsymbol{\Sigma}_k^{-1} + \boldsymbol{\Sigma_0}^{-1}, \hspace{10} \boldsymbol{\mu}_k = \boldsymbol{\Sigma_k}'[\boldsymbol{\Sigma_k}^{-1}\sum 1(z_i = k)y_i+ \boldsymbol{\Sigma_0}^{-1}\mu_0] \\
+    \boldsymbol{w}&\sim Dir(\alpha/K + \sum 1(z_i = 1), \alpha/K + \sum 1(z_i = 2), \ldots )
+\end{align*}
+
+The plot below shows the fitted posterior (mean) and the data for various Ks.
 
 \end{document}
