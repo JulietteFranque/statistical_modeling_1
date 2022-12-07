@@ -115,12 +115,21 @@ Where $\pi_i \in [0, 1]$, and $\delta_0$ is the Dirac delta function. With $\pi_
 \begin{figure}[!h]
     \centering
     \includegraphics[scale=.6
-    ]{../figures/dd.png}
-    \caption{Spike-and-slab prior illustration}
+    ]{../figures/spike.png}
+    \caption{Spike-and-slab prior illustration.}
     \label{prior}
 \end{figure}
 
 \cite{andrade2020disjunct}
+I reproduced this aspect of the paper by creating a ``toy'' dataset using:
+
+\begin{align*}
+    y_t& = x_{1, t}\beta_1 + x_{2, t}\beta_2 + \varepsilon_t\\
+    \varepsilon_t &\sim \mathcal{N}(0, \sigma^2)
+\end{align*}
+
+With $\beta_1 = 10$,  $\beta_2 = 0.05$, $\sigma^2 = 4$
+
 
 
 \subsection{Kalman Filtering and Smoothing}
