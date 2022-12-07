@@ -1,0 +1,41 @@
+\documentclass[12pt]{article}
+ 
+\usepackage[margin=.95in]{geometry} 
+\usepackage{amsmath,amsthm,amssymb, graphicx, multicol, array}
+ 
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+ 
+
+\begin{document}
+ 
+\title{SDS383C Final Project Report \\ \textbf{Inferring Causal Impact Using Bayesian Structural Time-series Models}} 
+\author{Brodersen, K., Gallusser, F., Koehler, J., Remy, N., Scott, S.\\Reproduced by Juliette Franqueville
+}
+\maketitle
+
+\begin{abstract}
+    The abstract
+\end{abstract}
+
+\section{Introduction}
+\subsection{Problem Statement}
+The paper I chose  presents a Bayesian methodology for inferring causal impact of market interventions on a metric of interest. A market intervention may be the launch of an advertising campaign, the release of a new product, a feature change in a product, or others. It is desirable for companies to understand whether a market intervention has a positive effect on a given metric, such as number of sales, revenue generated, number of users acquired, etc. 
+
+The causal impact of a treatment is defined as the difference between the observed metric (i.e. sales, number of users acquired, etc) and the metric that would have been observed had no treatment been introduced. This paper deals with time series, so the causal impact is the difference between the observed time series (i.e. sales, number of users acquired as a function of time) and the time series that would have been observed with no market intervention. The main goals of this paper are therefore to 1) predict the time series that would have been observed with no market intervention - this is called the ``counterfactual'' and 2) compare this prediction with the observed time series, where a market intervention was conducted.  
+
+\subsection{Previous Research}
+A typical approach for performing causal inference are ``difference-in-differences'' (DD) methods. DD models a usually based on a linear model between control in treatments groups. Figure \ref{}
+
+
+
+
+
+
+
+
+\subsection{Bayesian Structural Time-series models}
+\section{Methods}
+
+\section{Example with Simulated Data}
+\end{document}
