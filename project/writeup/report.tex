@@ -120,15 +120,53 @@ Where $\pi_i \in [0, 1]$, and $\delta_0$ is the Dirac delta function. With $\pi_
     \label{prior}
 \end{figure}
 
-\cite{andrade2020disjunct}
-I reproduced this aspect of the paper by creating a ``toy'' dataset using:
+I reproduced this aspect of the paper by creating a simulated dataset using:
 
 \begin{align*}
     y_t& = x_{1, t}\beta_1 + x_{2, t}\beta_2 + \varepsilon_t\\
     \varepsilon_t &\sim \mathcal{N}(0, \sigma^2)
 \end{align*}
 
-With $\beta_1 = 10$,  $\beta_2 = 0.05$, $\sigma^2 = 4$
+With $\beta_1 = 10$,  $\beta_2 = 0.05$, and $\sigma^2 = 4$. Figure \ref{toydata} shows the dataset created. 
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.6
+    ]{../figures/toydata.png}
+    \caption{Simulated data for reproduction of regression coefficient inference using spike-and-slab priors.}
+    \label{toydata}
+\end{figure}
+
+I used the following priors:
+
+\begin{align*}
+    \tau^2 &\sim IG(1, s^2/2)\\
+    \sigma^2 &\sim IG(\alpha_1, \alpha_2)\\
+    \pi_i &\sim Bernoulli(\theta)\\
+    \theta & \sim Beta(a, b)
+\end{align*}
+
+The conditional posteriors were (note that I checked my answers against \cite{andrade2020disjunct}):
+
+\begin{align}
+    P(\theta|\boldsymbol{\pi}) &\sim Beta(a + \sum_{i=1}^p \pi_i, b + \sum_{i=1}^p [1-\pi_i])\\
+    z_i &\sim Bernoulli(\pi_i)\\
+    P(\boldsymbol{\beta}|\sigma^2, \tau^2) &= \begin{cases}
+     \mathcal{N}\left(\left[\boldsymbol{X}^T\boldsymbol{X} \frac{1}{\sigma^2} + \boldsymbol{I}\frac{1}{\sigma^2\tau^2}\right]^{-1}\boldsymbol{X}^T \boldsymbol{y} \frac{1}{\sigma^2}, \left[\boldsymbol{X}^T\boldsymbol{X} \frac{1}{\sigma^2} + \boldsymbol{I}\frac{1}{\sigma^2\tau^2}\right]^{-1}\right)& \text{if } z_i = 1\\
+    0             & \text{if } z_i = 0
+\end{cases}\\
+P(\sigma^2|\boldsymbol{\beta}) &\sim IG\{\alpha_1 + n/2, \alpha_2 + \frac{1}{2}(\boldsymbol{y}-\boldsymbol{X}\boldsymbol{\beta})^T(\boldsymbol{y}-\boldsymbol{X}\boldsymbol{\beta})\} \\
+P(\tau^2|\boldsymbol{\beta}, \boldsymbol{\pi}) &\sim IG(1/2 + 1/2\sum_1^{p}\pi_i, s^2/2 + \boldsymbol{\beta}^T\boldsymbol{\beta}/2\sigma^2)\\
+\end{align}
+And finally, $\pi_i$ is updated using 
+
+\begin{align}
+    1-\pi_i = \frac{1-\theta}{(\sigma^2\tau^2)^{-1/2}\text{exp}\left(\frac{\sum_1^n x_j(y_j - X_{-i, j}\beta_{-i, j})}{2\sigma^2(\sum_1^n x_j^2 + 1/\sigma^2)}\right)  \left(\frac{\sigma^2}{\sum_1^n x_j^2 + 1/\sigma^2}\right)^{1/2}\theta   + (1-\theta)  }
+\end{align}
+
+Where $\boldsymbol{X}_{-i}$ and $\boldsymbol{\beta}_{-i}$ are $\boldsymbol{X}$ and $\boldsymbol{\beta}$ with the column and row corresponding to $i$ removed. At each iteration, $z_i$ is drawn from a Bernoulli distribution with $\pi_i$ parameter. The figures below show the posterios for $\beta_1$ and $\beta_2$.
+
+
 
 
 
