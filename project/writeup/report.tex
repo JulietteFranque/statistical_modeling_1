@@ -164,17 +164,158 @@ And finally, $\pi_i$ is updated using
     1-\pi_i = \frac{1-\theta}{(\sigma^2\tau^2)^{-1/2}\text{exp}\left(\frac{\sum_1^n x_j(y_j - X_{-i, j}\beta_{-i, j})}{2\sigma^2(\sum_1^n x_j^2 + 1/\sigma^2)}\right)  \left(\frac{\sigma^2}{\sum_1^n x_j^2 + 1/\sigma^2}\right)^{1/2}\theta   + (1-\theta)  }
 \end{align}
 
-Where $\boldsymbol{X}_{-i}$ and $\boldsymbol{\beta}_{-i}$ are $\boldsymbol{X}$ and $\boldsymbol{\beta}$ with the column and row corresponding to $i$ removed. At each iteration, $z_i$ is drawn from a Bernoulli distribution with $\pi_i$ parameter. The figures below show the posterios for $\beta_1$ and $\beta_2$.
+Where $\boldsymbol{X}_{-i}$ and $\boldsymbol{\beta}_{-i}$ are $\boldsymbol{X}$ and $\boldsymbol{\beta}$ with the column and row corresponding to $i$ removed, respectively. At each iteration, $z_i$ is drawn from a Bernoulli distribution with $\pi_i$ parameter. Figure \ref{post} below show the posteriors for $\beta_1$ and $\beta_2$ from the Gibbs sampling algorithm:
 
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.6
+    ]{../figures/posteriors.png}
+    \caption{Posteriors for $\beta_1$ and $\beta_2$.}
+    \label{post}
+\end{figure}
 
-
-
+As expected, the posterior for $\beta_1$ does not exhibit a strong spike, but the posterior for  $\beta_2$ exhibits a strong spike at 0 (its MAP is 0). This suggests that $\beta_1$ needs to be included in the model, but $\beta_2$ does not. Formally, variable selection from those posteriors can be done using the posterior inclusion probabilities ($\pi_i$). I reproduced this aspect of the paper in isolation, but of course, this step happens in combination with sampling the other parameters in the model (e.g. local level, dynamic regression coefficients, etc). Note that there may be some differences between what I implemented and what the paper implemented (due to the fact that some details were omitted in the paper), but the general approach is the same. 
 
 \subsection{Kalman Filtering and Smoothing}
+
+The state vector $\alpha_t$ in BSTS models is unobserved. However, this vector must be estimated to make forecasts for the counterfactual time series. A natural way to simulate the state vector is to use Kalman filtering and smoothing. The paper used an improved algorithm from Durbin and Koopman \cite{durbin2002simple}. However, given that I was new to Kalman filtering, I only had time to get familiar/implement basic algorithms, which are described below. \\
+
+\subsubsection{Kalman Filtering}\label{kalman}
+The aim of Kalman filtering is to predict $\alpha_{t}|y_{1:t}$, that is, to predict the state vector at time $t$ given observed data up to  $t$. There are two steps in Kalman filtering: updating and predicting. The update step is:
+
+\begin{align*}
+    \alpha_{t|t-1} &= T_t \alpha_t\\
+    P_{t|t-1} &= T_t P_{t-1|t-1} T_t^T + Q_t
+\end{align*}
+
+The predicting step is:
+\begin{align*}
+    v_t &= y_t - Z_t^T \alpha_{t|t-1}\\
+    F_t &= Z_t^T P_{t|t-1} Z_t + \sigma^2\\
+    K_t &= P_{t|t-1} Z_t^T F_t^{-1}\\
+    \alpha_{t|t} &= \alpha_{t|t-1} + K_t v_t\\
+    P_{t|t} &= (I - K_t Z_T^T)P_{t|t-1}
+\end{align*}
+
+$ \alpha_{t|t}$ is the predicted mean for the state vector, and $P_{t|t}$ is the covariance matrix. 
+
+\subsubsection{Kalman Smoothing}
+Kalman Smoothing is an algorithm that comprises of a forward pass (which is the same as Kalman filtering), and a backward pass. The backward pass computes smoothed estimated for the state vector. I used the Rauch–Tung–Striebel algorithm for Kalman smoothing. The backward pass is done using:
+
+\begin{align*}
+    \alpha_{t|n} &= \alpha{t|t} + C_t(\alpha_{t+1|n} - \alpha_{t+1|t})\\
+    P_{t|n} &= P_{t|t} + C_t(P_{t+1|n} - P_{t+1|t})C_t^T
+\end{align*}
+
+Where $C_t = P_{t|t}F_{t+1}P_{t+1|t}^{-1}$. $\alpha_{t+1|n}$, $\alpha_{t+1|t}$, $P_{t+1|n}$, $P_{t+1|t}$ are obtained from the forward pass previously run. 
+
+\subsubsection{Forecasting}
+The goal of the paper is to forecast the counterfactual time series to compare it to observed data. After using the Kalman Smoothing algorithm, data is forecast using:
+
+\begin{align*}
+    \alpha^*_{t + 1}& =  T_{t} \alpha_{t|t} \\
+    P^*_{t + 1}& =  T_{t} P_{t|t} T_t^T + Q_t\\
+    y^*_{t + 1} &= Z_{t + 1}^T \alpha^*_{t + 1}\\
+    \sigma^{2*}_{t + 1} &= Z_{t + 1}^T P^*_{t + 1}Z_{t + 1} + \sigma^2\\
+\end{align*}
+
+For the first time step, and then for $d > 1$:
+
+
+\begin{align*}
+    \alpha^*_{t + d}& =  T_{t} \alpha^*_{t + d -1} \\
+    P^*_{t + d}& =  T_{t} P^*_{t + d - 1} T_t^T + Q_t\\
+    y^*_{t + d} &= Z_{t + 1}^T \alpha^*_{t + d}\\
+    \sigma^{2*}_{t + d} &= Z_{t + d}^T P^*_{t + d}Z_{t + d} + \sigma^2\\
+\end{align*}
+
+
 \subsection{Gibbs Sampling}
+The paper uses a Gibbs sampler that comprises of the following steps:
+\begin{itemize}
+    \item Sample from $P(\boldsymbol{\alpha}|\boldsymbol{y}, \boldsymbol{\theta}, \boldsymbol{\beta},  \boldsymbol{\sigma^2_{\beta}})$ using the Kalman Smoother algorithm from \cite{durbin2002simple}
+    \item Sample from $\boldsymbol{\theta}\sim P(\boldsymbol{\theta}|\boldsymbol{y}, \boldsymbol{\beta},  \boldsymbol{\sigma^2_{\beta}}, \boldsymbol{\alpha})$
+    \item Sample from $P(\boldsymbol{\beta},\boldsymbol{\sigma^2_{\beta}}|\boldsymbol{\alpha}, \boldsymbol{\theta}, \boldsymbol{y})$
+\end{itemize}
+
+Where $\boldsymbol{\beta}$ are static regression coefficients (with spike-and-slab priors placed on them) and $\boldsymbol{\sigma^2_\beta}$ their associated variances. $\boldsymbol{\theta}$ is the vector of remaining parameters to be estimated, and $\boldsymbol{\alpha}$ is the state vector. The Gibbs sampling algorithm yields to the stationary distribution $P(\boldsymbol{\alpha}, \boldsymbol{\theta}, \boldsymbol{\beta},  \boldsymbol{\sigma^2_{\beta}}|\boldsymbol{y})$.
 
 \section{Example with Simulated Data}\label{toy}
+The paper features an demonstration of their method using simulated data. I was unable to fully replicate their method, so I only implemented the Kalman smoothing step described in section \ref{kalman} assuming that all parameters were known. I replicated some of the other plots using the authors' R package, which is described in detail in a previous paper \cite{scott2014predicting}. I tried to match the simulated data as closely as possible, but some details in the paper were left out.
+
+\subsection{Data Simulation}
+The BSTS model at hand comprises of a dynamic regression with two covariates and a local level. The covariates could for example represent revenue in other regions that did not receive the maket intervention. The BSTS model is structured as follows:
+
+\begin{align}
+y_t &= \begin{bmatrix} \label{q1}
+1 & 0 & 0\\
+0 & x_{t, 1} & 0\\
+0 & 0 & x_{t, 2}
+\end{bmatrix} \begin{bmatrix}
+\mu_{t} \\
+\beta_{t, 1} \\
+\beta_{t, 2} \\
+\end{bmatrix} +
+\varepsilon_{t} \\
+\begin{bmatrix} \label{q2}
+\mu_{t+1} \\
+\beta_{t+1, 1} \\
+\beta_{t+1, 2} \\
+\end{bmatrix} &=  \begin{bmatrix}
+1 & 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & 1
+\end{bmatrix}  \begin{bmatrix}
+\mu_{t} \\
+\beta_{t, 1} \\
+\beta_{t, 2} \\
+\end{bmatrix} + \begin{bmatrix}
+1 & 0 & 0\\
+0 & 1 & 0\\
+0 & 0 & 1
+\end{bmatrix}  \begin{bmatrix}
+\eta_{t, 1} \\
+\eta_{t, 2}  \\
+\eta_{t, 3}  \\
+\end{bmatrix} 
+\end{align}
+
+Where $\mu_t$ is the local level and $\beta_{t, 1}$ and   $\beta_{t, 1}$ are the dynamic regression coefficients for the two covariates $x_{t, 1}$ and   $x_{t, 1}$, $\varepsilon_t \sim \mathcal{N}(0, 1)$ and $\boldsymbol{\eta_t} \sim \mathcal{N}(0, \boldsymbol{Q}_t)$, where $\boldsymbol{Q}_t = 0.02 \boldsymbol{I}_{3}$. In other words, the model matrices are:
+
+\begin{align*}
+    \boldsymbol{\alpha_t} &= \begin{bmatrix}
+\mu_{t} \\
+\beta_{t, 1} \\
+\beta_{t, 2} \\
+\end{bmatrix}\\
+\boldsymbol{T}_t &= \boldsymbol{R}_t = \boldsymbol{I}_3\\
+\boldsymbol{Z}_t^T &=\begin{bmatrix}
+1 & 0 & 0\\
+0 & x_{t, 1} & 0\\
+0 & 0 & x_{t, 2}
+\end{bmatrix} 
+\end{align*}
+
+The covariates are unspecified trigonometric functions. I chose:
+
+\begin{align*}
+    x_{t, 1} &= sin\{(2\pi/90\}  t) \\
+x_{t, 2} &= sin(\{2\pi/360\}  t)\\
+\end{align*}
+
+I simulated data using equations \ref{q1} and \ref{q2}, with $\boldsymbol{\alpha}_0 = \begin{bmatrix} 10 &5 & 0
+\end{bmatrix} $. After market intervention, I simulated an ``uplift'' in the metric of interest of $50\%$. Figure \ref{data} shows the simulated dataset. 
+
+
+
+
+\subsection{Kalman Smoothing}
+
+
+\subsection{Results}
+
 \subsection{Model}
+
 
 
 \bibliographystyle{ieeetr} 
