@@ -330,18 +330,39 @@ I used the Kalman filtering/smoothing/forecasting steps described in section \re
     \label{states}
 \end{figure}
 
-Using the results from the Kalman smoothing algorithm, the following counterfactual series was predicted:
+Using the results from the Kalman smoothing algorithm, the  counterfactual series was predicted as shown in Figure \ref{pred}. The absolute causal impact, defined as the difference between the observed and predicted time-series, is shown in Figure \ref{diff}.
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.5
+    ]{../figures/pred.png}
+    \caption{Predicted counterfactual series.}
+    \label{pred}
+\end{figure}
 
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.5
+    ]{../figures/diff.png}
+    \caption{Predicted vs.\ actual absolute causal impact.}
+    \label{diff}
+\end{figure}
 
+As mentioned, I assumed that all the parameters were known in the Kalman smoother. I did attempt to infer $\sigma^2$ (which was set equal to 1) with a Gibbs sampler, which resulted in Figure \ref{sig}. I could not get the full Gibbs sampler (with all unknown parameters) to work, however.
 
-
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.5
+    ]{../figures/sigma.png}
+    \caption{Histogram of traces for $\sigma^2$.}
+    \label{sig}
+\end{figure}
 
 \subsection{Results}
 
 \subsection{Model}
 
 
-
+\newpage
 \bibliographystyle{ieeetr} 
 \bibliography{ref}
 \end{document}
