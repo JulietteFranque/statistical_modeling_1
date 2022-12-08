@@ -15,17 +15,17 @@
 \maketitle
 
 \begin{abstract}
-    The abstract
+    Identifying the most efficient market interventions (such as advertising campaigns, product launches, introduction of a new features, etc) are important for companies to develop competitive advantages. The goal of this paper is to provide a methodology for inferring whether a past market intervention  had an effect on a metric of interest (such as sales, revenue, etc). In this paper, the authors present the model available their R package, ``CausalImpact''. The model comprises of a Bayesian Structural Time Series Model (BSTS) that is used to predict the metric of interest had no market intervention happened. The prediction is then compared to the observed data after the intervention. The causal impact is the difference between the observed and predicted data. The authors provide examples using simulated and empirical data. In this replication, I explain how the model is structured, show an example for how spike-and-slab priors work, and use a Kalman smoother to simulate the state vector in the BSTS model. However, I was not able to fully replicate their model, so I also use their R package to replicate some of the plots present in the original paper.
 \end{abstract}
 
 \section{Introduction}
 \subsection{Problem Statement}
-The paper I chose  presents a Bayesian methodology for inferring causal impact of market interventions on a metric of interest. A market intervention may be the launch of an advertising campaign, the release of a new product, a feature change in a product, or others. It is desirable for companies to understand whether a market intervention has a positive effect on a given metric, such as number of sales, revenue generated, number of users acquired, etc. 
+The paper I chose  presents a Bayesian methodology for inferring causal impact of market interventions on a metric of interest. A market intervention may be the launch of an advertising campaign, the release of a new product, a feature change in a product, or others. It is desirable for companies to understand whether a market intervention has a positive, negative, or insignificant effect on a given metric, such as number of sales, revenue generated, number of users acquired, etc. \\
 
 The causal impact of a treatment is defined as the difference between the observed metric (i.e. sales, number of users acquired, etc) and the metric that would have been observed had no treatment been introduced. This paper deals with time series, so the causal impact is the difference between the observed time series (i.e. sales, number of users acquired as a function of time) and the time series that would have been observed with no market intervention. The main goals of this paper are therefore to 1) predict the time series that would have been observed with no market intervention - this is called the ``counterfactual'' and 2) compare this prediction with the observed time series, where a market intervention was conducted.  A key concept in this paper is that control time-series, such as time-series for other regions where no market intervention was introduced, can be used to predict the counterfactual.
 
 \subsection{Previous Methods}
-A typical approach for performing causal inference are ``difference-in-differences'' (DD) methods. DD models a usually based on a linear model between control in treatments groups. Figure \ref{dd} describes a simple example using data I simulated. A control group (for example, sales data from another region) time-series is  available. The treatment group undergoes a  market intervention event. We can model the treatment time series as a linear model of the control time series (in the simulation, I used $y_t = x_t + 500 + \varepsilon_t$, where $y_t$ and $x_t$ are the treatment and control data points at time $t$, respectively.). Using the linear relationship inferred from pre-market intervention data and the post-intervention control group data, the counterfactual treatment time-series can be predicted. The causal impact is then the difference between the observed treatment and predicted treatment time-series post market intervention. 
+A typical approach for performing causal inference are ``difference-in-differences'' (DD) methods. DD models a usually based on a linear model between control and treatments groups. Figure \ref{dd} describes a simple example using data I simulated. A control group (for example, sales data from another region) time-series is  available. The treatment group undergoes a  market intervention event. We can model the treatment time series as a linear model of the control time series (in the simulation, I used $y_t = x_t + 500 + \varepsilon_t$, where $y_t$ and $x_t$ are the treatment and control data points at time $t$, respectively.). Using the linear relationship inferred from pre-market intervention data and the post-intervention control group data, the counterfactual treatment time-series can be predicted. The causal impact is then the difference between the observed treatment and predicted treatment time-series post market intervention. 
 
 \begin{figure}[!h]
     \centering
@@ -41,11 +41,11 @@ There are several limitations associated with this type of approach that this pa
 Bayesian Structural Time-series (BSTS) models are very flexible state-space models for time-series data. In fact, all ARIMA models can be specified in this manner. BSTS models can also account for dynamic regression coefficients. A BSTS model is specified as follows:
 
 \begin{align} 
-y_t &= Z_t^T\alpha_t + \varepsilon_t\\ \label{eq}
-\alpha_{t+1} &= T_t \alpha_t + R_t \eta_t \label{eq1}
+y_t &= \boldsymbol{Z_}t^T\boldsymbol{\alpha}_t + \varepsilon_t\\ \label{eq}
+\boldsymbol{\alpha}_{t+1} &= \boldsymbol{T}_t \boldsymbol{\alpha}_t + \boldsymbol{R}_t \boldsymbol{\eta}_t \label{eq1}
 \end{align}
 Where $\varepsilon_t \sim \mathcal{N}(0, \sigma^2)$ and 
-$\eta_t \sim \mathcal{N}(0, Q_t)$. $ Q_t$ is a $p \times p$ matrix, which can be diagonal or not. The first line is the observation equation, and the second is the state equation. $y_t$ is the observed response (scalar), while $\alpha_t$ is a hidden state (scalar or vector, not observed). $Z_t$ is a $p \times n$ matrix, which can for example contain covariates for control groups or rows of 1s, depending on how the model is structured.  $T_t$ is a $p \times p$ ``transition matrix'' and $R_t$ is a $p \times p$ ``control matrix''. Both matrices are populated based on the model. Some common, simple forms of models expressed in this format are shown below. \\
+$\eta_t \sim \mathcal{N}(0, \boldsymbol{Q}_t)$. $ \boldsymbol{Q}_t$ is a $p \times p$ matrix, which can be diagonal or not. The first line is the observation equation, and the second is the state equation. $y_t$ is the observed response (scalar), while $\boldsymbol{\alpha}_t$ is a hidden state (scalar or vector, not observed). $\boldsymbol{Z}_t$ is a $p \times n$ matrix, which can for example contain covariates for control groups or rows of 1s, depending on how the model is structured.  $\boldsymbol{T}_t$ is a $p \times p$ ``transition matrix'' and $\boldsymbol{R}_t$ is a $p \times p$ ``control matrix''. Both matrices are populated based on the model. Some common, simple forms of models expressed in this format are shown below. \\
 
 \subsubsection{AR(1) Model}
 
@@ -87,14 +87,14 @@ A linear regression with dynamic coefficients can be written as:
 
 Which can be re-written in the same format as equations \label{eq} and \label{eq1} by setting $\beta_t = \alpha_t$, $\beta_{t+1}=\alpha_{t+1}$, $Z_t^T = x_t$, $T_t = 1$, $R_t = 1$.\\
 
-Other state-space models not explicitly  listed include seasonal models, local linear trends, semi-local linear trends, etc. To allow for more flexibility, state components can be assembled by concatenating their observation and hidden state vectors $Z_t$ and $\alpha_t$ and re-arranging other matrices ($R_t, T_t$) as elements in block diagonal matrices. A concrete example showing how to assemble different models is shown in section \ref{toy}.
+Other state-space models not explicitly  listed include seasonal models, local linear trends, semi-local linear trends, etc. To allow for more flexibility, state components can be assembled by concatenating their observation and hidden state vectors $\boldsymbol{Z}_t$ and $\boldsymbol{\alpha}_t$ and re-arranging other matrices ($\boldsymbol{R}_t, \boldsymbol{T}_t$) as elements in block diagonal matrices. A concrete example showing how to assemble different models is shown in section \ref{toy}.
 
 
 
 
 \section{Methods}
 \subsection{Spike-and-Slab Priors}
-The paper uses spike-and-slab priors for static regression coefficients (that is, coefficients in \ref{linreg}). Specifying spike-and-slab priors over regression coefficients is essentially a Bayesian method for variable selection, which involves keeping only necessary covariates in the model. Lasso is a typical frequentist methods for variable selection in regressions. For a static regression component with multiple $\beta_i$ coefficient formulated as:
+The paper uses spike-and-slab priors for static regression coefficients (that is, coefficients in \ref{linreg}). Specifying spike-and-slab priors over regression coefficients is essentially a Bayesian method for variable selection. Variable selection is the process of choosing only some of the covariates available. Lasso is a typical frequentist method for variable selection in regressions. For a static regression component with multiple $\beta_i$ coefficients formulated as:
 
 \begin{align}
     y_t &=  \boldsymbol{X}_t\boldsymbol{\beta} + \varepsilon_t\\
@@ -178,10 +178,10 @@ As expected, the posterior for $\beta_1$ does not exhibit a strong spike, but th
 
 \subsection{Kalman Filtering and Smoothing}
 
-The state vector $\alpha_t$ in BSTS models is unobserved. However, this vector must be estimated to make forecasts for the counterfactual time series. A natural way to simulate the state vector is to use Kalman filtering and smoothing. The paper used an improved algorithm from Durbin and Koopman \cite{durbin2002simple}. However, given that I was new to Kalman filtering, I only had time to get familiar/implement basic algorithms, which are described below. \\
+The state vector $\boldsymbol{\alpha}_t$ in BSTS models is unobserved. However, this vector must be estimated to  forecast the counterfactual time series. A natural way to simulate the state vector is to use Kalman filtering and smoothing. The paper used an improved algorithm from Durbin and Koopman \cite{durbin2002simple}. However, given that I was new to Kalman filtering, I only had time to get familiar/implement basic algorithms, which are described below. \\
 
 \subsubsection{Kalman Filtering}\label{kalman}
-The aim of Kalman filtering is to predict $\alpha_{t}|y_{1:t}$, that is, to predict the state vector at time $t$ given observed data up to  $t$. There are two steps in Kalman filtering: updating and predicting. The update step is:
+The aim of Kalman filtering is to predict $\boldsymbol{\alpha}_{t}|\boldsymbol{y_{1:t}}$, that is, to predict the state vector at time $t$ given observed data up to  $t$. There are two steps in Kalman filtering: updating and predicting. The update step is:
 
 \begin{align*}
     \alpha_{t|t-1} &= T_t \alpha_t\\
@@ -200,7 +200,7 @@ The predicting step is:
 $ \alpha_{t|t}$ is the predicted mean for the state vector, and $P_{t|t}$ is the covariance matrix. 
 
 \subsubsection{Kalman Smoothing}
-Kalman Smoothing is an algorithm that comprises of a forward pass (which is the same as Kalman filtering), and a backward pass. The backward pass computes smoothed estimated for the state vector. I used the Rauch–Tung–Striebel algorithm for Kalman smoothing. The backward pass is done using:
+Kalman Smoothing is an algorithm that comprises of a forward pass (which is the same as Kalman filtering), and a backward pass. The backward pass computes smoothed estimates for the state vector. I used the Rauch–Tung–Striebel algorithm for Kalman smoothing. The backward pass is done using:
 
 \begin{align*}
     \alpha_{t|n} &= \alpha{t|t} + C_t(\alpha_{t+1|n} - \alpha_{t+1|t})\\
@@ -233,7 +233,7 @@ For the first time step, and then for $d > 1$:
 \subsection{Gibbs Sampling}
 The paper uses a Gibbs sampler that comprises of the following steps:
 \begin{itemize}
-    \item Sample from $P(\boldsymbol{\alpha}|\boldsymbol{y}, \boldsymbol{\theta}, \boldsymbol{\beta},  \boldsymbol{\sigma^2_{\beta}})$ using the Kalman Smoother algorithm from \cite{durbin2002simple}
+    \item Sample from $P(\boldsymbol{\alpha}|\boldsymbol{y}, \boldsymbol{\theta}, \boldsymbol{\beta},  \boldsymbol{\sigma^2_{\beta}})$ using the Kalman smoother algorithm from \cite{durbin2002simple}
     \item Sample from $\boldsymbol{\theta}\sim P(\boldsymbol{\theta}|\boldsymbol{y}, \boldsymbol{\beta},  \boldsymbol{\sigma^2_{\beta}}, \boldsymbol{\alpha})$
     \item Sample from $P(\boldsymbol{\beta},\boldsymbol{\sigma^2_{\beta}}|\boldsymbol{\alpha}, \boldsymbol{\theta}, \boldsymbol{y})$
 \end{itemize}
@@ -241,9 +241,9 @@ The paper uses a Gibbs sampler that comprises of the following steps:
 Where $\boldsymbol{\beta}$ are static regression coefficients (with spike-and-slab priors placed on them) and $\boldsymbol{\sigma^2_\beta}$ their associated variances. $\boldsymbol{\theta}$ is the vector of remaining parameters to be estimated, and $\boldsymbol{\alpha}$ is the state vector. The Gibbs sampling algorithm yields to the stationary distribution $P(\boldsymbol{\alpha}, \boldsymbol{\theta}, \boldsymbol{\beta},  \boldsymbol{\sigma^2_{\beta}}|\boldsymbol{y})$.
 
 \section{Example with Simulated Data}\label{toy}
-The paper features an demonstration of their method using simulated data. I was unable to fully replicate their method, so I only implemented the Kalman smoothing step described in section \ref{kalman}, assuming that all parameters were known. I replicated some of the other plots using the authors' R package, which is described in detail in a previous paper \cite{scott2014predicting}. I tried to match the simulated data as closely as possible, but some details in the paper were left out.
+The paper features an demonstration of their method using simulated data. I was unable to fully replicate their method, so I only implemented the Kalman smoothing step described in section \ref{kalman}, assuming that all parameters were known. Note that the example did not comprise of a static regression, so I did not use my spike-and-slab code in this context. I replicated some of the other plots using the authors' R package, which is described in detail in a previous paper \cite{scott2014predicting}. I tried to match the simulated data as closely as possible, but some details in the paper were left out.
 
-\subsection{Data Simulation}
+\subsection{Data Simulation}\label{dataset}
 The BSTS model at hand comprises of a dynamic regression with two covariates and a local level. The covariates could for example represent revenue in other regions that did not receive the maket intervention. The BSTS model is structured as follows:
 
 \begin{align}
@@ -304,7 +304,7 @@ x_{t, 2} &= sin(\{2\pi/360\}  t)\\
 \end{align*}
 
 I simulated data using equations \ref{q1} and \ref{q2}, with $\boldsymbol{\alpha}_0 = \begin{bmatrix} 10 &5 & 0
-\end{bmatrix} $. After market intervention, I simulated an ``uplift'' in the metric of interest of $50\%$. Figure \ref{data} shows the simulated dataset. 
+\end{bmatrix} $. After market intervention, I simulated an ``effect size'' in the metric of interest of $50\%$. Figure \ref{data} shows the simulated dataset. 
 
 
 \begin{figure}[!h]
@@ -316,7 +316,7 @@ I simulated data using equations \ref{q1} and \ref{q2}, with $\boldsymbol{\alpha
 \end{figure}
 
 
-
+\newpage
 
 \subsection{Kalman Smoothing}
 I used the Kalman filtering/smoothing/forecasting steps described in section \ref{kalman} to predict the counterfactual time series. Figure \ref{states} shows the states $\boldsymbol{\alpha}$ recovered by Kalman filtering alone and with Kalman smoothing.
@@ -335,7 +335,7 @@ Using the results from the Kalman smoothing algorithm, the  counterfactual serie
     \centering
     \includegraphics[scale=.5
     ]{../figures/pred.png}
-    \caption{Predicted counterfactual series.}
+    \caption{Predicted counterfactual time-series.}
     \label{pred}
 \end{figure}
 
@@ -346,23 +346,48 @@ Using the results from the Kalman smoothing algorithm, the  counterfactual serie
     \caption{Predicted vs.\ actual absolute causal impact.}
     \label{diff}
 \end{figure}
-
+\newpage
 As mentioned, I assumed that all the parameters were known in the Kalman smoother. I did attempt to infer $\sigma^2$ (which was set equal to 1) with a Gibbs sampler, which resulted in Figure \ref{sig}. I could not get the full Gibbs sampler (with all unknown parameters) to work, however.
 
 \begin{figure}[!h]
     \centering
-    \includegraphics[scale=.5
+    \includegraphics[scale=.6
     ]{../figures/sigma.png}
     \caption{Histogram of traces for $\sigma^2$.}
     \label{sig}
 \end{figure}
+\newpage
 
 \subsection{Results}
+For the rest of this section, I used the BSTS package that the authors wrote in R. In their results section for the simulated data, the authors were primarily concerned with 1) showing the relationship between effect size and the probability that the model will detect an effect and 2) showing that the proportion of simulations that predict an effect size interval containing the true effect size does not vary with campaign duration (i.e. the length of the market intervention). The sections below show how I proceeded to replicate those results.
 
-\subsection{Model}
+\subsubsection{Relationship Between Effect Size and Probability of Detection}
+For this section, the steps involved were:
+\begin{itemize}
+    \item Create datasets for various effect sizes: 0, 0.1\%, 1\%, 10\%, 25\%, 50\%, 100\%. For each effect size, $2^8$ time-series were created, using the same process as in \ref{dataset}.
+    \item For each time-series, the BSTS package (configured with a local level and two dynamic regressions) was used to predict the counterfactual time-series.
+    \item For each simulation, if the 95\% confidence interval for mean absolute causal impact did not contain 0, the model was deemed to have detected an effect.
+    \item The last step was to plot the percentage of simulations where an effect was detected as a function of effect size.
+\end{itemize}
 
 
-\newpage
+
+Figure \ref{result} shows the percentage of simulations where an effect was detected as a function of effect size. The plot is very similar as the one obtained by the authors. As expected, the model is rarely able to detect an effect when the effect size is very small. As it increase, the model is almost always able to detect the effect. 
+\subsubsection{Coverage Properties of the Posterior Probability Intervals as a Function of Campaign Length}
+The aim of the second analysis was to show that the percentage of simulations that contained the true effect size for a given effect size did not vary as a function of campaign length. To accomplish this, the steps were:
+\begin{itemize}
+    \item Create datasets with varying campaign lengths. I created $2^8$ datasets for each campaign length, for campaign lengths varying from 25 to 150 days.
+    \item For each dataset, I fit a BSTS model using the package
+    \item For each simulation, I determined whether the true relative effect size fell into the $95\%$ CI for the predicted (average) relative effect size
+    \item I plotted the percentage of intervals that contained the true effect size as a function of campaign length
+\end{itemize}
+The resulting plot is shown in Figure \ref{int}. Again, the plot is very similar to the plot in the paper. 
+
+\section{Example with Real Data }
+Unfortunately, the data in this section was not publicly available. The dataset that the authors used consisted of treatment and control time-series for ``number of clicks''. The treatment received was an advertising campaign. One of the main takeaways from this section was that in the absence of control time-series (i.e. data from control groups such as data from other countries/regions without market intervention), other types of time-series can be used. In the example, the authors used keyword searches from the advertiser's industry as covariates. This analysis almost perfectly replicated the analysis where the used control groups as covariates.
+
+
+\clearpage
 \bibliographystyle{ieeetr} 
 \bibliography{ref}
 \end{document}
