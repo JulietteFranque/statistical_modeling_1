@@ -319,7 +319,22 @@ I simulated data using equations \ref{q1} and \ref{q2}, with $\boldsymbol{\alpha
 
 
 \subsection{Kalman Smoothing}
-I used the Kalman filtering/smoothing/forecasting steps described in section \ref{kalman} to predict the counterfactual time series. 
+I used the Kalman filtering/smoothing/forecasting steps described in section \ref{kalman} to predict the counterfactual time series. Figure \ref{states} shows the states $\boldsymbol{\alpha}$ recovered by Kalman filtering alone and with Kalman smoothing.
+
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.5
+    ]{../figures/states.png}
+    \caption{States $\boldsymbol{\alpha}$ found with Kalman filtering only and Kalman smoothing. }
+    \label{states}
+\end{figure}
+
+Using the results from the Kalman smoothing algorithm, the following counterfactual series was predicted:
+
+
+
+
 
 \subsection{Results}
 
