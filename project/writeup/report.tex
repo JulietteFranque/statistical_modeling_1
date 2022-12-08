@@ -241,7 +241,7 @@ The paper uses a Gibbs sampler that comprises of the following steps:
 Where $\boldsymbol{\beta}$ are static regression coefficients (with spike-and-slab priors placed on them) and $\boldsymbol{\sigma^2_\beta}$ their associated variances. $\boldsymbol{\theta}$ is the vector of remaining parameters to be estimated, and $\boldsymbol{\alpha}$ is the state vector. The Gibbs sampling algorithm yields to the stationary distribution $P(\boldsymbol{\alpha}, \boldsymbol{\theta}, \boldsymbol{\beta},  \boldsymbol{\sigma^2_{\beta}}|\boldsymbol{y})$.
 
 \section{Example with Simulated Data}\label{toy}
-The paper features an demonstration of their method using simulated data. I was unable to fully replicate their method, so I only implemented the Kalman smoothing step described in section \ref{kalman} assuming that all parameters were known. I replicated some of the other plots using the authors' R package, which is described in detail in a previous paper \cite{scott2014predicting}. I tried to match the simulated data as closely as possible, but some details in the paper were left out.
+The paper features an demonstration of their method using simulated data. I was unable to fully replicate their method, so I only implemented the Kalman smoothing step described in section \ref{kalman}, assuming that all parameters were known. I replicated some of the other plots using the authors' R package, which is described in detail in a previous paper \cite{scott2014predicting}. I tried to match the simulated data as closely as possible, but some details in the paper were left out.
 
 \subsection{Data Simulation}
 The BSTS model at hand comprises of a dynamic regression with two covariates and a local level. The covariates could for example represent revenue in other regions that did not receive the maket intervention. The BSTS model is structured as follows:
@@ -307,10 +307,19 @@ I simulated data using equations \ref{q1} and \ref{q2}, with $\boldsymbol{\alpha
 \end{bmatrix} $. After market intervention, I simulated an ``uplift'' in the metric of interest of $50\%$. Figure \ref{data} shows the simulated dataset. 
 
 
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.6
+    ]{../figures/data.png}
+    \caption{Simulated data.}
+    \label{data}
+\end{figure}
+
+
 
 
 \subsection{Kalman Smoothing}
-
+I used the Kalman filtering/smoothing/forecasting steps described in section \ref{kalman} to predict the counterfactual time series. 
 
 \subsection{Results}
 
