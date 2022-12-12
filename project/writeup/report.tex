@@ -10,12 +10,12 @@
 \begin{document}
  
 \title{SDS383C Final Project Report \\ \textbf{Inferring Causal Impact Using Bayesian Structural Time-series Models}} 
-\author{Brodersen, K., Gallusser, F., Koehler, J., Remy, N., Scott, S.\\Reproduced by Juliette Franqueville
+\author{Brodersen, K., Gallusser, F., Koehler, J., Remy, N., Scott, S. (Google, Inc.)\\Reproduced by Juliette Franqueville
 }
 \maketitle
-
+\newpage
 \begin{abstract}
-    Identifying the most efficient market interventions (such as advertising campaigns, product launches, introduction of a new features, etc) are important for companies to develop competitive advantages. The goal of this paper is to provide a methodology for inferring whether a past market intervention  had an effect on a metric of interest (such as sales, revenue, etc). In this paper, the authors present the model available their R package, ``CausalImpact''. The model comprises of a Bayesian Structural Time Series Model (BSTS) that is used to predict the metric of interest had no market intervention happened. The prediction is then compared to the observed data after the intervention. The causal impact is the difference between the observed and predicted data. The authors provide examples using simulated and empirical data. In this replication, I explain how the model is structured, show an example for how spike-and-slab priors work, and use a Kalman smoother to simulate the state vector in the BSTS model. However, I was not able to fully replicate their model, so I also use their R package to replicate some of the plots present in the original paper.
+    Identifying the most efficient market interventions (such as advertising campaigns, product launches, introduction of a new features, etc) are important for companies to develop competitive advantages. The goal of this paper is to provide a methodology for inferring whether a past market intervention  had an effect on a metric of interest (such as sales, revenue, etc). In this paper, the authors present the model available in their R package, ``CausalImpact''. The model comprises of a Bayesian Structural Time Series Model (BSTS) that is used to predict the metric of interest had no market intervention happened. The prediction is then compared to the observed data after the intervention. The causal impact is the difference between the observed and predicted data. The authors provide examples using simulated and empirical data. In this replication, I explain how the model is structured, show an example for how spike-and-slab priors work, and use a Kalman smoother to simulate the state vector in the BSTS model. However, I was not able to fully replicate their model, so I also use their R package to replicate some of the plots present in the original paper.
 \end{abstract}
 
 \section{Introduction}
@@ -25,7 +25,7 @@ The paper I chose  presents a Bayesian methodology for inferring causal impact o
 The causal impact of a treatment is defined as the difference between the observed metric (i.e. sales, number of users acquired, etc) and the metric that would have been observed had no treatment been introduced. This paper deals with time series, so the causal impact is the difference between the observed time series (i.e. sales, number of users acquired as a function of time) and the time series that would have been observed with no market intervention. The main goals of this paper are therefore to 1) predict the time series that would have been observed with no market intervention - this is called the ``counterfactual'' and 2) compare this prediction with the observed time series, where a market intervention was conducted.  A key concept in this paper is that control time-series, such as time-series for other regions where no market intervention was introduced, can be used to predict the counterfactual.
 
 \subsection{Previous Methods}
-A typical approach for performing causal inference are ``difference-in-differences'' (DD) methods. DD models a usually based on a linear model between control and treatments groups. Figure \ref{dd} describes a simple example using data I simulated. A control group (for example, sales data from another region) time-series is  available. The treatment group undergoes a  market intervention event. We can model the treatment time series as a linear model of the control time series (in the simulation, I used $y_t = x_t + 500 + \varepsilon_t$, where $y_t$ and $x_t$ are the treatment and control data points at time $t$, respectively.). Using the linear relationship inferred from pre-market intervention data and the post-intervention control group data, the counterfactual treatment time-series can be predicted. The causal impact is then the difference between the observed treatment and predicted treatment time-series post market intervention. 
+A typical approach for performing causal inference are ``difference-in-differences'' (DD) methods. DD models are usually based on a linear model between control and treatments groups. Figure \ref{dd} describes a simple example using data I simulated. A control group (for example, sales data from another region) time-series is  available. The treatment group undergoes a  market intervention event. We can model the treatment time series as a linear model of the control time series (in the simulation, I used $y_t = x_t + 500 + \varepsilon_t$, where $y_t$ and $x_t$ are the treatment and control data points at time $t$, respectively.). Using the linear relationship inferred from pre-market intervention data and the post-intervention control group data, the counterfactual treatment time-series can be predicted. The causal impact is then the difference between the observed treatment and predicted treatment time-series post market intervention. 
 
 \begin{figure}[!h]
     \centering
@@ -35,17 +35,17 @@ A typical approach for performing causal inference are ``difference-in-differenc
     \label{dd}
 \end{figure}
 
-There are several limitations associated with this type of approach that this paper seeks to address. For example, DD models are generally not very flexible. Regression coefficients are usually static, which may not be a suitable assumption if they are evolving in time. The authors also wish to avoid using some of the variable selection methods that DD models use. For example, Lasso regression has been used for variable selection \cite{belloni2015program}, but this approach does not take uncertainty about which predictors to use and their coefficients, unlike Bayesian methods.
+There are several limitations associated with this type of approach that this paper seeks to address. For example, DD models are generally not very flexible. Regression coefficients are usually static, which may not be a suitable assumption if they are believed to evolve in time. The authors also wish to avoid using some of the variable selection methods that DD models use. For example, Lasso regression has been used for variable selection \cite{belloni2015program}, but this approach does not take uncertainty about which predictors to use and their coefficients into account like Bayesian methods do.
 
 \subsection{Bayesian Structural Time-series models}
 Bayesian Structural Time-series (BSTS) models are very flexible state-space models for time-series data. In fact, all ARIMA models can be specified in this manner. BSTS models can also account for dynamic regression coefficients. A BSTS model is specified as follows:
 
 \begin{align} 
-y_t &= \boldsymbol{Z_}t^T\boldsymbol{\alpha}_t + \varepsilon_t\\ \label{eq}
+y_t &= \boldsymbol{Z}_t^T\boldsymbol{\alpha}_t + \varepsilon_t\\ \label{eq}
 \boldsymbol{\alpha}_{t+1} &= \boldsymbol{T}_t \boldsymbol{\alpha}_t + \boldsymbol{R}_t \boldsymbol{\eta}_t \label{eq1}
 \end{align}
 Where $\varepsilon_t \sim \mathcal{N}(0, \sigma^2)$ and 
-$\eta_t \sim \mathcal{N}(0, \boldsymbol{Q}_t)$. $ \boldsymbol{Q}_t$ is a $p \times p$ matrix, which can be diagonal or not. The first line is the observation equation, and the second is the state equation. $y_t$ is the observed response (scalar), while $\boldsymbol{\alpha}_t$ is a hidden state (scalar or vector, not observed). $\boldsymbol{Z}_t$ is a $p \times n$ matrix, which can for example contain covariates for control groups or rows of 1s, depending on how the model is structured.  $\boldsymbol{T}_t$ is a $p \times p$ ``transition matrix'' and $\boldsymbol{R}_t$ is a $p \times p$ ``control matrix''. Both matrices are populated based on the model. Some common, simple forms of models expressed in this format are shown below. \\
+$\eta_t \sim \mathcal{N}(0, \boldsymbol{Q}_t)$. $ \boldsymbol{Q}_t$ is a $p \times p$ matrix, which can be diagonal or not. The first line is the observation equation, and the second is the state equation. $y_t$ is the observed response (scalar), while $\boldsymbol{\alpha}_t$ is a hidden state (scalar or vector, not observed). $\boldsymbol{Z}_t$ is a $p \times n$ matrix, which can for example contain covariates for control groups or  1s, depending on how the model is structured.  $\boldsymbol{T}_t$ is a $p \times p$ ``transition matrix'' and $\boldsymbol{R}_t$ is a $p \times p$ ``control matrix''. Both matrices are populated based on the model. Some common, simple forms of models expressed in this format are shown below. \\
 
 \subsubsection{AR(1) Model}
 
@@ -103,12 +103,12 @@ The paper uses spike-and-slab priors for static regression coefficients (that is
 
 A spike-and-slab prior has the form:
 
-\begin{align}
+\begin{align} 
     \beta_i \sim (1-\pi_i)\delta_0 + \pi_i\mathcal{N}(0, \tau^2\sigma^2)
 \end{align}
 
 
-Where $\pi_i \in [0, 1]$, and $\delta_0$ is the Dirac delta function. With $\pi_i = 0.5$, $\sigma^2 = 1$, $\tau^2 = 1$, this distribution is shown in Figure \ref{prior}
+Where $\pi_i \in [0, 1]$, and $\delta_0$ is the Dirac delta function. With $\pi_i = 0.5$, $\sigma^2 = 1$, $\tau^2 = 1$, this distribution is shown in Figure \ref{prior}.
 
 
 
@@ -304,7 +304,7 @@ x_{t, 2} &= sin(\{2\pi/360\}  t)\\
 \end{align*}
 
 I simulated data using equations \ref{q1} and \ref{q2}, with $\boldsymbol{\alpha}_0 = \begin{bmatrix} 10 &5 & 0
-\end{bmatrix} $. After market intervention, I simulated an ``effect size'' in the metric of interest of $50\%$. Figure \ref{data} shows the simulated dataset. 
+\end{bmatrix} $. After market intervention, I simulated an ``effect size'' in the metric of interest of $50\%$ (i.e. the post intervention time-series was multiplied by $1.5$). Figure \ref{data} shows the simulated dataset. 
 
 
 \begin{figure}[!h]
@@ -373,18 +373,49 @@ For this section, the steps involved were:
 
 
 Figure \ref{result} shows the percentage of simulations where an effect was detected as a function of effect size. The plot is very similar as the one obtained by the authors. As expected, the model is rarely able to detect an effect when the effect size is very small. As it increase, the model is almost always able to detect the effect. 
+
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.6
+    ]{../figures/finalsim.pdf}
+    \caption{Probability of effect detection as a function of effect size.}
+    \label{result}
+\end{figure}
+
+
 \subsubsection{Coverage Properties of the Posterior Probability Intervals as a Function of Campaign Length}
 The aim of the second analysis was to show that the percentage of simulations that contained the true effect size for a given effect size did not vary as a function of campaign length. To accomplish this, the steps were:
 \begin{itemize}
-    \item Create datasets with varying campaign lengths. I created $2^8$ datasets for each campaign length, for campaign lengths varying from 25 to 150 days.
+    \item Create datasets with varying campaign lengths. I created $2^8$ datasets for each campaign length, for campaign lengths varying from 25 to 150 days and an effect size of 1\%.
     \item For each dataset, I fit a BSTS model using the package
     \item For each simulation, I determined whether the true relative effect size fell into the $95\%$ CI for the predicted (average) relative effect size
     \item I plotted the percentage of intervals that contained the true effect size as a function of campaign length
 \end{itemize}
-The resulting plot is shown in Figure \ref{int}. Again, the plot is very similar to the plot in the paper. 
+
+The resulting plot is shown in Figure \ref{int}. Again, the plot is very similar to the plot in the paper. As expected if the model is well-calibrated, 95\% of intervals should contain the true effect size. This should be true even as campaign length increases, because the confidence intervals for effect size should get larger to account for the increased uncertainty.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=.6
+    ]{../figures/newplot.pdf}
+    \caption{Probability of CI containing the true effect as a function of campaign length.}
+    \label{int}
+\end{figure}
+\newpage
 
 \section{Example with Real Data }
-Unfortunately, the data in this section was not publicly available. The dataset that the authors used consisted of treatment and control time-series for ``number of clicks''. The treatment received was an advertising campaign. One of the main takeaways from this section was that in the absence of control time-series (i.e. data from control groups such as data from other countries/regions without market intervention), other types of time-series can be used. In the example, the authors used keyword searches from the advertiser's industry as covariates. This analysis almost perfectly replicated the analysis where the used control groups as covariates.
+Unfortunately, the data in this section was not publicly available. The dataset that the authors used consisted of treatment and control time-series for ``number of clicks''. The treatment received was an advertising campaign. One of the main takeaways from this section was that in the absence of control time-series (i.e. data from control groups such as data from other countries/regions without market intervention), other types of time-series can be used. In the example, the authors used keyword searches from the advertiser's industry as covariates. This analysis almost perfectly replicated the analysis where they used control groups as covariates.
+
+\section{Conclusion}
+This paper provides a fully Bayesian and very flexible framework for inferring causal impact. Spike-and-slab priors allow for variable selection. Using priors on all unknown variable allow for incorporating prior knowledge in the model. I used a Gibbs sampler for inferring regression coefficients in a static linear regression where spike-and-slab priors were used on the coefficients (which the BSTS model does), and implemented a simple Kalman smoother (which the BSTS model uses, though it uses a faster approach).
+Unfortunately, I was not able to replicate the full model, but this means that I got to use the authors' R package, which was useful in itself for my personal learning. \\
+
+Despite the fact that replicating this paper ended up being more challenging than I had anticipated, I am glad that I picked it because 1) I learned about Kalman filters/smoothers, which are widely used even in my field (engineering) 2) I learned about basic time series models such as ARMA/ARIMA, random walks, etc, which I had been wanting to learn about and had little background in 3) I got better at R as
+I was forced to use it for the analyses in which I had to use the package. Overall, I think that this package and paper are important and actually useful in industry (the paper is from Google) for time-series modeling in the context of marketing, which  I am interested in getting into post-graduation.
+
+
+
 
 
 \clearpage
